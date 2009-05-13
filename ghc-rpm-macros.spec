@@ -1,6 +1,6 @@
 Name:		ghc-rpm-macros
 Version:	0.1
-Release:	6%{?dist}
+Release:	7%{?dist}
 Summary:	Macros for building packages for GHC
 
 Group:		Development/Libraries
@@ -44,11 +44,13 @@ rm -rf $RPM_BUILD_ROOT
 %files
 %defattr(-,root,root,-)
 %doc COPYING AUTHORS
-%{_sysconfdir}/rpm/macros.ghc
-
+%config(noreplace) %{_sysconfdir}/rpm/macros.ghc
 
 
 %changelog
+* Wed May 13 2009 Yaakov M. Nemoy <ynemoy@fedoraproject.org> - 0.1-7
+- specifies the macros file as a %%conf
+
 * Sat May  9 2009 Yaakov M. Nemoy <ynemoy@fedoraproject.org> - 0.1-6
 - removes archs and replaces with noarch
 - bumps to avoid conflicts with jens
