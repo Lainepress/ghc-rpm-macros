@@ -10,7 +10,7 @@ make -f cabal-rpm.mk %{_smp_mflags} \
 
 %cabal_install %cabal copy --destdir=${RPM_BUILD_ROOT} -v
 
-%ghcdocdir %{_docdir}/ghc/libraries/%{?pkg_name}%{!?pkg_name:%{name}}-%{version}
+%ghcdocdir %{_docdir}/ghc/libraries/%{?pkg_name}%{!?pkg_name:%{name}}
 %ghcpkgdir %{_libdir}/ghc-%(ghc --numeric-version)/%{?pkg_name}%{!?pkg_name:%name}-%{version}
 
 %ghc_gen_filelists() \

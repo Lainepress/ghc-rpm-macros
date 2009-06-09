@@ -1,6 +1,6 @@
 Name:		ghc-rpm-macros
-Version:	0.1
-Release:	7%{?dist}
+Version:	0.2
+Release:	1%{?dist}
 Summary:	Macros for building packages for GHC
 
 Group:		Development/Libraries
@@ -48,6 +48,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Tue Jun  9 2009 Jens Petersen <petersen@redhat.com> - 0.2-1
+- drop version from ghcdocdir since it breaks haddock indexing
+
 * Wed May 13 2009 Yaakov M. Nemoy <ynemoy@fedoraproject.org> - 0.1-7
 - specifies the macros file as a %%conf
 
