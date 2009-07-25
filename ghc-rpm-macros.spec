@@ -1,6 +1,6 @@
 Name:		ghc-rpm-macros
 Version:	0.2
-Release:	1%{?dist}
+Release:	2%{?dist}
 Summary:	Macros for building packages for GHC
 
 Group:		Development/Libraries
@@ -48,6 +48,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Fri Jul 24 2009 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 0.2-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_12_Mass_Rebuild
+
 * Tue Jun  9 2009 Jens Petersen <petersen@redhat.com> - 0.2-1
 - drop version from ghcdocdir since it breaks haddock indexing
 
