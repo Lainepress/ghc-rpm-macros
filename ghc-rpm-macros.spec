@@ -1,6 +1,6 @@
 Name:		ghc-rpm-macros
-Version:	0.2
-Release:	2%{?dist}
+Version:	0.2.1
+Release:	1%{?dist}
 Summary:	Macros for building packages for GHC
 
 Group:		Development/Libraries
@@ -48,6 +48,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Tue Sep 22 2009 Jens Petersen <petersen@redhat.com> - 0.2.1-1
+- version ghcdocdir to allow multiple doc versions like ghcpkgdir
+
 * Fri Jul 24 2009 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 0.2-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_12_Mass_Rebuild
 
