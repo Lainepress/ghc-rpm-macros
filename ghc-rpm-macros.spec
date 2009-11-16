@@ -1,5 +1,5 @@
 Name:		ghc-rpm-macros
-Version:	0.2.2
+Version:	0.2.3
 Release:	1%{?dist}
 Summary:	Macros for building packages for GHC
 
@@ -48,6 +48,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon Nov 16 2009 Jens Petersen <petersen@redhat.com> - 0.2.3-1
+- use the latest installed pkg version for %%GHCRequires
+
 * Mon Nov 16 2009 Jens Petersen <petersen@redhat.com> - 0.2.2-1
 - add %%GHCRequires for automatically versioned library deps
 
