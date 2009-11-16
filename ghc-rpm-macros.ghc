@@ -36,3 +36,6 @@ echo '%{ghcdocdir}' >> %1-doc.files \
 %ghc_reindex_haddock ( cd %{_docdir}/ghc/libraries && [ -x "./gen_contents_index" ] && ./gen_contents_index ) || :
 
 %ghc_version %(ghc --numeric-version)
+
+%GHCRequires() \
+Requires:       ghc-%1-%2 = %(ghc-pkg list --global --simple-output %1|sed -e "s/%1-//")

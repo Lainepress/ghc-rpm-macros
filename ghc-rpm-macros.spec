@@ -1,6 +1,6 @@
 Name:		ghc-rpm-macros
-Version:	0.2.1
-Release:	2%{?dist}
+Version:	0.2.2
+Release:	1%{?dist}
 Summary:	Macros for building packages for GHC
 
 Group:		Development/Libraries
@@ -48,6 +48,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon Nov 16 2009 Jens Petersen <petersen@redhat.com> - 0.2.2-1
+- add %%GHCRequires for automatically versioned library deps
+
 * Tue Sep 22 2009 Jens Petersen <petersen@redhat.com> - 0.2.1-2
 - no, revert versioned ghcdocdir again!
 
