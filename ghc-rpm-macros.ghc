@@ -37,4 +37,4 @@ echo '%{ghcdocdir}' >> %1-doc.files \
 
 %ghc_version %(ghc --numeric-version)
 
-%ghc_pkg_ver() ghc-%1-%2 = %(ghc-pkg list --global --simple-output %1|sed -e "s/.*%1-//")
+%ghc_pkg_ver() %(ghc-pkg list --global --simple-output %1|sed -e "s/.*%1-//")
