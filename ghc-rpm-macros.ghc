@@ -1,7 +1,7 @@
 %cabal %{_bindir}/runghc Setup
 
 %cabal_configure \
-%cabal configure --prefix=%{_prefix} --libdir=%{_libdir} --docdir=%{_docdir}/%{name}-%{version} --htmldir=%{ghcdocdir} --libsubdir='$compiler/$pkgid'
+%cabal configure --prefix=%{_prefix} --libdir=%{_libdir} --docdir=%{_docdir}/%{name}-%{version} --htmldir=%{ghcdocdir} --libsubdir='$compiler/$pkgid' %{?with_shared:--enable-shared}
 
 %cabal_makefile \
 %cabal makefile -f cabal-rpm.mk \
@@ -10,31 +10,33 @@ make -f cabal-rpm.mk %{_smp_mflags} \
 
 %cabal_install %cabal copy --destdir=${RPM_BUILD_ROOT} -v
 
-%ghcdocdir %{_docdir}/ghc/libraries/%{?pkg_name}%{!?pkg_name:%{name}}
-%ghcpkgdir %{_libdir}/ghc-%(ghc --numeric-version)/%{?pkg_name}%{!?pkg_name:%name}-%{version}
+%ghcdocdir %{_docdir}/ghc/libraries/%{?pkg_name}%{!?pkg_name:%{name}}-%{version}
+%ghcpkgdir %{_libdir}/ghc-%{ghc_version}/%{?pkg_name}%{!?pkg_name:%name}-%{version}
 
 %ghc_gen_filelists() \
-rm -f %1-devel.files %1-prof.files %1-doc.files \
+rm -f %1.files %1-devel.files %1-prof.files %1-doc.files \
+echo '%defattr(-,root,root,-)' > %1.files \
+echo '%dir %{ghcpkgdir}' >> %1.files \
+echo '%attr(755,root,root) %{ghcpkgdir}/libHS%{?pkg_name}%{!?pkg_name:%name}-%{version}-ghc%{ghc_version}.so' >> %1.files \
 echo '%defattr(-,root,root,-)' > %1-devel.files \
+echo '%{_libdir}/ghc-%{ghc_version}/package.conf.d/%{?pkg_name}%{!?pkg_name:%name}-%{version}-*.conf' >> %1-devel.files \
 find ${RPM_BUILD_ROOT}%{ghcpkgdir} -type d | sed 's/^/%dir /' >> %1-devel.files \
-find ${RPM_BUILD_ROOT}%{ghcpkgdir} ! \\( -type d -o -name '*_p.a' -o -name '*.p_hi' \\) >> %1-devel.files \
+find ${RPM_BUILD_ROOT}%{ghcpkgdir} ! \\( -type d -o -name '*_p.a' -o -name '*.p_hi' -o -name 'libHS*.so' \\) >> %1-devel.files \
 echo '%defattr(-,root,root,-)' > %1-prof.files \
 find ${RPM_BUILD_ROOT}%{ghcpkgdir} \\( -name '*_p.a' -o -name '*.p_hi' \\) >> %1-prof.files \
-sed -i -e "s!${RPM_BUILD_ROOT}!!g" %1-devel.files %1-prof.files \
+sed -i -e "s!${RPM_BUILD_ROOT}!!g" %1.files %1-devel.files %1-prof.files \
 echo '%defattr(-,root,root,-)' > %1-doc.files \
 echo '%{ghcdocdir}' >> %1-doc.files \
 %{nil}
 
-%ghc_gen_scripts %cabal register --gen-script ; %cabal unregister --gen-script
-
-%ghc_install_scripts install -m 755 register.sh unregister.sh ${RPM_BUILD_ROOT}%{ghcpkgdir}
-
-%ghc_register_pkg %{ghcpkgdir}/register.sh >/dev/null || :
-
-%ghc_unregister_pkg %{ghcpkgdir}/unregister.sh >/dev/null || :
-
 %ghc_reindex_haddock ( cd %{_docdir}/ghc/libraries && [ -x "./gen_contents_index" ] && ./gen_contents_index ) || :
 
-%ghc_version %(ghc --numeric-version)
+%ghc_version %{!?ghc_version:%(ghc --numeric-version)}%{?ghc_version}
 
 %ghc_pkg_ver() %(ghc-pkg list --global --simple-output %1|sed -e "s/.*%1-//")
+
+%cabal_pkg_conf \
+%cabal register --gen-pkg-config \
+mkdir -p $RPM_BUILD_ROOT%{_libdir}/ghc-%(ghc --numeric-version)/package.conf.d \
+install --mode=0644 %{?pkg_name}%{!?pkg_name:%name}-%{version}.conf $RPM_BUILD_ROOT%{_libdir}/ghc-%{ghc_version}/package.conf.d
+ 

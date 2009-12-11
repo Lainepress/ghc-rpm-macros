@@ -1,5 +1,5 @@
 Name:		ghc-rpm-macros
-Version:	0.2.5
+Version:	0.3.0
 Release:	1%{?dist}
 Summary:	Macros for building packages for GHC
 
@@ -48,6 +48,14 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Sat Dec 12 2009 Jens Petersen <petersen@redhat.com> - 0.3.0-1
+- major updates for ghc-6.12, package.conf.d, and shared libraries
+- add shared support to cabal_configure, ghc_gen_filelists
+- version ghcdocdir
+- replace ghc_gen_scripts, ghc_install_scripts, ghc_register_pkg, ghc_unregister_pkg
+  with cabal_pkg_conf
+- allow (ghc to) override ghc_version
+
 * Mon Nov 16 2009 Jens Petersen <petersen@redhat.com> - 0.2.5-1
 - make ghc_pkg_ver only return pkg version
 
