@@ -19,7 +19,7 @@ echo '%defattr(-,root,root,-)' > %1.files \
 echo '%dir %{ghcpkgdir}' >> %1.files \
 echo '%attr(755,root,root) %{ghcpkgdir}/libHS%{?pkg_name}%{!?pkg_name:%name}-%{version}-ghc%{ghc_version}.so' >> %1.files \
 echo '%defattr(-,root,root,-)' > %1-devel.files \
-echo '%{_libdir}/ghc-%{ghc_version}/package.conf.d/%{?pkg_name}%{!?pkg_name:%name}-%{version}-*.conf' >> %1-devel.files \
+echo '%{_libdir}/ghc-%{ghc_version}/package.conf.d/%{?pkg_name}%{!?pkg_name:%name}-%{version}*.conf' >> %1-devel.files \
 find ${RPM_BUILD_ROOT}%{ghcpkgdir} -type d | sed 's/^/%dir /' >> %1-devel.files \
 find ${RPM_BUILD_ROOT}%{ghcpkgdir} ! \\( -type d -o -name '*_p.a' -o -name '*.p_hi' -o -name 'libHS*.so' \\) >> %1-devel.files \
 echo '%defattr(-,root,root,-)' > %1-prof.files \
@@ -31,7 +31,7 @@ echo '%{ghcdocdir}' >> %1-doc.files \
 
 %ghc_reindex_haddock ( cd %{_docdir}/ghc/libraries && [ -x "./gen_contents_index" ] && ./gen_contents_index ) || :
 
-%ghc_version %{!?ghc_version:%(ghc --numeric-version)}%{?ghc_version}
+%ghc_version %{!?ghc_version_override:%(ghc --numeric-version)}%{?ghc_version_override}
 
 %ghc_pkg_ver() %(ghc-pkg list --global --simple-output %1|sed -e "s/.*%1-//")
 
