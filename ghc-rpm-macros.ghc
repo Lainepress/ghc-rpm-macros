@@ -3,6 +3,8 @@
 %cabal_configure \
 %cabal configure --prefix=%{_prefix} --libdir=%{_libdir} --docdir=%{_docdir}/%{name}-%{version} --htmldir=%{ghcdocdir} --libsubdir='$compiler/$pkgid' %{?with_shared:--enable-shared}
 
+%cabal_configure_dynamic %cabal_configure --ghc-option=-dynamic
+
 %cabal_makefile \
 %cabal makefile -f cabal-rpm.mk \
 make -f cabal-rpm.mk %{_smp_mflags} \
@@ -40,3 +42,16 @@ echo '%{ghcdocdir}' >> %1-doc.files \
 mkdir -p $RPM_BUILD_ROOT%{_libdir}/ghc-%(ghc --numeric-version)/package.conf.d \
 install --mode=0644 %{?pkg_name}%{!?pkg_name:%name}-%{version}.conf $RPM_BUILD_ROOT%{_libdir}/ghc-%{ghc_version}/package.conf.d
  
+%ghc_requires Requires:       ghc = %{ghc_version}\
+Requires(post): ghc = %{ghc_version}\
+Requires(postun): ghc = %{ghc_version}\
+%if %{with shared}\
+Requires:       ghc-%{?pkg_name}%{!?pkg_name:%name} = %{version}-%{release}\
+%endif
+
+%ghc_doc_requires Requires:       ghc-doc = %{ghc_version}\
+Requires(post): ghc-doc = %{ghc_version}\
+Requires(postun): ghc-doc = %{ghc_version}
+
+%ghc_prof_requires Requires:       ghc-prof = %{ghc_version}\
+Requires:       ghc-%{?pkg_name}%{!?pkg_name:%name}-devel = %{version}-%{release}

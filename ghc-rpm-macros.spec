@@ -1,5 +1,5 @@
 Name:		ghc-rpm-macros
-Version:	0.3.1
+Version:	0.4.0
 Release:	1%{?dist}
 Summary:	Macros for building packages for GHC
 
@@ -48,6 +48,10 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Thu Dec 24 2009 Jens Petersen <petersen@redhat.com> - 0.4.0-1
+- add cabal_configure_dynamic
+- add ghc_requires, ghc_doc_requires, ghc_prof_requires
+
 * Tue Dec 15 2009 Jens Petersen <petersen@redhat.com> - 0.3.1-1
 - use ghc_version_override to override ghc_version
 - fix pkg .conf filelist match
