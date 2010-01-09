@@ -1,5 +1,5 @@
 Name:		ghc-rpm-macros
-Version:	0.4.0
+Version:	0.5.0
 Release:	1%{?dist}
 Summary:	Macros for building packages for GHC
 
@@ -48,6 +48,13 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Sun Jan 10 2010 Jens Petersen <petersen@redhat.com> - 0.5.0-1
+- pkg_name must be set now for binlib packages too
+- new ghc_lib_package and ghc_binlib_package macros make packaging too easy
+- ghc_package_devel, ghc_package_doc, and ghc_package_prof helper macros
+- ghc_gen_filelists now defaults to ghc-%%{pkg_name}
+- add dynamic bcond to cabal_configure instead of cabal_configure_dynamic
+
 * Thu Dec 24 2009 Jens Petersen <petersen@redhat.com> - 0.4.0-1
 - add cabal_configure_dynamic
 - add ghc_requires, ghc_doc_requires, ghc_prof_requires

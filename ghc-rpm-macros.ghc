@@ -1,9 +1,7 @@
 %cabal %{_bindir}/runghc Setup
 
 %cabal_configure \
-%cabal configure --prefix=%{_prefix} --libdir=%{_libdir} --docdir=%{_docdir}/%{name}-%{version} --htmldir=%{ghcdocdir} --libsubdir='$compiler/$pkgid' %{?with_shared:--enable-shared}
-
-%cabal_configure_dynamic %cabal_configure --ghc-option=-dynamic
+%cabal configure --prefix=%{_prefix} --libdir=%{_libdir} --docdir=%{_docdir}/%{name}-%{version} --htmldir=%{ghcdocdir} --libsubdir='$compiler/$pkgid' %{?with_shared:--enable-shared} %{?with_dynamic:--ghc-option=-dynamic}
 
 %cabal_makefile \
 %cabal makefile -f cabal-rpm.mk \
@@ -12,23 +10,24 @@ make -f cabal-rpm.mk %{_smp_mflags} \
 
 %cabal_install %cabal copy --destdir=${RPM_BUILD_ROOT} -v
 
-%ghcdocdir %{_docdir}/ghc/libraries/%{?pkg_name}%{!?pkg_name:%{name}}-%{version}
-%ghcpkgdir %{_libdir}/ghc-%{ghc_version}/%{?pkg_name}%{!?pkg_name:%name}-%{version}
+%ghcdocdir %{_docdir}/ghc/libraries/%{pkg_name}-%{version}
+%ghcpkgdir %{_libdir}/ghc-%{ghc_version}/%{pkg_name}-%{version}
 
 %ghc_gen_filelists() \
-rm -f %1.files %1-devel.files %1-prof.files %1-doc.files \
-echo '%defattr(-,root,root,-)' > %1.files \
-echo '%dir %{ghcpkgdir}' >> %1.files \
-echo '%attr(755,root,root) %{ghcpkgdir}/libHS%{?pkg_name}%{!?pkg_name:%name}-%{version}-ghc%{ghc_version}.so' >> %1.files \
-echo '%defattr(-,root,root,-)' > %1-devel.files \
-echo '%{_libdir}/ghc-%{ghc_version}/package.conf.d/%{?pkg_name}%{!?pkg_name:%name}-%{version}*.conf' >> %1-devel.files \
-find ${RPM_BUILD_ROOT}%{ghcpkgdir} -type d | sed 's/^/%dir /' >> %1-devel.files \
-find ${RPM_BUILD_ROOT}%{ghcpkgdir} ! \\( -type d -o -name '*_p.a' -o -name '*.p_hi' -o -name 'libHS*.so' \\) >> %1-devel.files \
-echo '%defattr(-,root,root,-)' > %1-prof.files \
-find ${RPM_BUILD_ROOT}%{ghcpkgdir} \\( -name '*_p.a' -o -name '*.p_hi' \\) >> %1-prof.files \
-sed -i -e "s!${RPM_BUILD_ROOT}!!g" %1.files %1-devel.files %1-prof.files \
-echo '%defattr(-,root,root,-)' > %1-doc.files \
-echo '%{ghcdocdir}' >> %1-doc.files \
+basepkg=%{?1}%{!?1:ghc-%{pkg_name}} \
+rm -f ${basepkg}.files ${basepkg}-devel.files ${basepkg}-prof.files ${basepkg}-doc.files \
+echo '%defattr(-,root,root,-)' > ${basepkg}.files \
+echo '%dir %{ghcpkgdir}' >> ${basepkg}.files \
+echo '%attr(755,root,root) %{ghcpkgdir}/libHS%{pkg_name}-%{version}-ghc%{ghc_version}.so' >> ${basepkg}.files \
+echo '%defattr(-,root,root,-)' > ${basepkg}-devel.files \
+echo '%{_libdir}/ghc-%{ghc_version}/package.conf.d/%{pkg_name}-%{version}*.conf' >> ${basepkg}-devel.files \
+find ${RPM_BUILD_ROOT}%{ghcpkgdir} -type d | sed 's/^/%dir /' >> ${basepkg}-devel.files \
+find ${RPM_BUILD_ROOT}%{ghcpkgdir} ! \\( -type d -o -name '*_p.a' -o -name '*.p_hi' -o -name 'libHS*.so' \\) >> ${basepkg}-devel.files \
+echo '%defattr(-,root,root,-)' > ${basepkg}-prof.files \
+find ${RPM_BUILD_ROOT}%{ghcpkgdir} \\( -name '*_p.a' -o -name '*.p_hi' \\) >> ${basepkg}-prof.files \
+sed -i -e "s!${RPM_BUILD_ROOT}!!g" ${basepkg}.files ${basepkg}-devel.files ${basepkg}-prof.files \
+echo '%defattr(-,root,root,-)' > ${basepkg}-doc.files \
+echo '%{ghcdocdir}' >> ${basepkg}-doc.files \
 %{nil}
 
 %ghc_reindex_haddock ( cd %{_docdir}/ghc/libraries && [ -x "./gen_contents_index" ] && ./gen_contents_index ) || :
@@ -40,13 +39,13 @@ echo '%{ghcdocdir}' >> %1-doc.files \
 %cabal_pkg_conf \
 %cabal register --gen-pkg-config \
 mkdir -p $RPM_BUILD_ROOT%{_libdir}/ghc-%(ghc --numeric-version)/package.conf.d \
-install --mode=0644 %{?pkg_name}%{!?pkg_name:%name}-%{version}.conf $RPM_BUILD_ROOT%{_libdir}/ghc-%{ghc_version}/package.conf.d
+install --mode=0644 %{pkg_name}-%{version}.conf $RPM_BUILD_ROOT%{_libdir}/ghc-%{ghc_version}/package.conf.d
  
 %ghc_requires Requires:       ghc = %{ghc_version}\
 Requires(post): ghc = %{ghc_version}\
 Requires(postun): ghc = %{ghc_version}\
 %if %{with shared}\
-Requires:       ghc-%{?pkg_name}%{!?pkg_name:%name} = %{version}-%{release}\
+Requires:       ghc-%{pkg_name} = %{version}-%{release}\
 %endif
 
 %ghc_doc_requires Requires:       ghc-doc = %{ghc_version}\
@@ -54,4 +53,112 @@ Requires(post): ghc-doc = %{ghc_version}\
 Requires(postun): ghc-doc = %{ghc_version}
 
 %ghc_prof_requires Requires:       ghc-prof = %{ghc_version}\
-Requires:       ghc-%{?pkg_name}%{!?pkg_name:%name}-devel = %{version}-%{release}
+Requires:       ghc-%{pkg_name}-devel = %{version}-%{release}
+
+%ghc_lib_package(n:c:h:)\
+%define ghc_pkg_name %{-n:ghc-%{-n*}}%{!-n:ghc-%{pkg_name}}\
+%if %{with shared}\
+%files -n %{ghc_pkg_name} -f %{ghc_pkg_name}.files\
+%defattr(-,root,root,-)\
+%{_docdir}/%{name}-%{version}\
+%endif\
+\
+%ghc_package_devel\
+\
+%ghc_package_doc\
+\
+%ghc_package_prof\
+
+
+%ghc_binlib_package(n:c:h:l:v:)\
+%define ghc_pkg_name %{-n:ghc-%{-n*}}%{!-n:ghc-%{pkg_name}}\
+%package -n %{ghc_pkg_name}\
+Summary:        Library for %{common_summary}\
+Group:          System Environment/Libraries\
+%{-v:Version:        %{-v*}}\
+%{-l:License:        %{-l*}}\
+\
+%description -n %{ghc_pkg_name}\
+%{common_description}\
+\
+This package provides the shared library.\
+\
+%ghc_lib_package\
+
+
+%ghc_package_devel(n:c:h:l:v:)\
+%define ghc_pkg_name %{-n:ghc-%{-n*}}%{!-n:ghc-%{pkg_name}}\
+%package -n %{ghc_pkg_name}-devel\
+Summary:        %{common_summary} development files\
+Group:          Development/Libraries\
+%{-v:Version:        %{-v*}}\
+%{-l:License:        %{-l*}}\
+%{?ghc_requires}\
+%{!-h:%{?ghc_pkg_deps:Requires:       %{ghc_pkg_deps}}}\
+%{-h:Requires:       %{-h*}}\
+%{!-c:%{?ghc_pkg_c_deps:Requires:       %{ghc_pkg_c_deps}}}\
+%{-c:Requires:       %{-c*}}\
+\
+%description -n %{ghc_pkg_name}-devel\
+%{common_description}\
+\
+This package contains the development files.\
+\
+%post -n %{ghc_pkg_name}-devel\
+ghc-pkg recache\
+\
+%postun -n %{ghc_pkg_name}-devel\
+ghc-pkg recache\
+\
+%files -n %{ghc_pkg_name}-devel -f %{ghc_pkg_name}-devel.files\
+%defattr(-,root,root,-)\
+%if %{without shared}\
+%{_docdir}/%{name}-%{version}\
+%endif\
+
+%ghc_package_doc(n:h:l:v:)\
+%define ghc_pkg_name %{-n:ghc-%{-n*}}%{!-n:ghc-%{pkg_name}}\
+%package -n %{ghc_pkg_name}-doc\
+Summary:        Documentation for %{common_summary}\
+Group:          Development/Libraries\
+%{-v:Version:        %{-v*}}\
+%{-l:License:        %{-l*}}\
+%{?ghc_doc_requires}\
+%{!-h:%{?ghc_pkg_deps:Requires:       %(echo %{ghc_pkg_deps} | sed -e "s/\\(ghc-[^, ]*\\)-devel/\\1-doc/g")}}\
+%{-h:Requires:       %(echo %{-h*} | sed -e "s/\\(ghc-[^, ]*\\)-devel/\\1-doc/g")}\
+\
+%description -n %{ghc_pkg_name}-doc\
+%{common_description}\
+\
+This package contains development documentation files.\
+\
+%post -n %{ghc_pkg_name}-doc\
+%ghc_reindex_haddock\
+\
+%postun -n %{ghc_pkg_name}-doc\
+if [ "$1" -eq 0 ] ; then\
+  %ghc_reindex_haddock\
+fi\
+\
+%files -n %{ghc_pkg_name}-doc -f %{ghc_pkg_name}-doc.files\
+%defattr(-,root,root,-)\
+
+%ghc_package_prof(n:h:l:v:)\
+%define ghc_pkg_name %{-n:ghc-%{-n*}}%{!-n:ghc-%{pkg_name}}\
+%package -n %{ghc_pkg_name}-prof\
+Summary:        Profiling libraries for %{common_summary}\
+Group:          Development/Libraries\
+%{-v:Version:        %{-v*}}\
+%{-l:License:        %{-l*}}\
+%{?ghc_prof_requires}\
+%{!-h:%{?ghc_pkg_deps:Requires:       %(echo %{ghc_pkg_deps} | sed -e "s/\\(ghc-[^, ]*\\)-devel/\\1-prof/g")}}\
+%{-h:Requires:       %(echo %{-h*} | sed -e "s/\\(ghc-[^, ]*\\)-devel/\\1-prof/g")}\
+\
+%description -n %{ghc_pkg_name}-prof\
+%{common_description}\
+\
+This package contains the profiling library.\
+\
+%files -n %{ghc_pkg_name}-prof -f %{ghc_pkg_name}-prof.files\
+%defattr(-,root,root,-)\
+
