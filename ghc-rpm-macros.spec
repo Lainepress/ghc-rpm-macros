@@ -1,5 +1,5 @@
 Name:		ghc-rpm-macros
-Version:	0.5.0
+Version:	0.5.1
 Release:	1%{?dist}
 Summary:	Macros for building packages for GHC
 
@@ -48,6 +48,16 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon Jan 11 2010 Jens Petersen <petersen@redhat.com> - 0.5.1-1
+- add ghcdocbasedir
+- revert ghcdocdir to match upstream ghc
+- ghcdocdir and ghcpkgdir now take optional name version args
+- update ghc_gen_filelists to new optional name version args
+- handle docdir in ghc_gen_filelists
+- ghc_reindex_haddock uses ghcdocbasedir
+- summary and description options to ghc_binlib_package, ghc_package_devel,
+  ghc_package_doc, and ghc_package_prof
+
 * Sun Jan 10 2010 Jens Petersen <petersen@redhat.com> - 0.5.0-1
 - pkg_name must be set now for binlib packages too
 - new ghc_lib_package and ghc_binlib_package macros make packaging too easy
