@@ -79,7 +79,7 @@ Requires:       ghc-%{-n:%{-n*}}%{!-n:%{pkg_name}}-devel = %{version}-%{release}
 %define local_pkg_name %{-n:%{-n*}}%{!-n:%{pkg_name}}\
 %define ghc_pkg_name ghc-%{local_pkg_name}\
 %package -n %{ghc_pkg_name}\
-Summary:        Library for %{-s:%{-s*}}%{!-s:%{?common_summary}%{!?common_summary:%{local_pkg_name}}}\
+Summary:        %{-s:%{-s*}}%{!-s:%{?common_summary}%{!?common_summary:%{local_pkg_name}}}\
 Group:          System Environment/Libraries\
 %{-v:Version:        %{-v*}}\
 %{-l:License:        %{-l*}}\
