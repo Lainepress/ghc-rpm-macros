@@ -51,7 +51,7 @@ install --mode=0644 %{pkg_name}-%{version}.conf $RPM_BUILD_ROOT%{_libdir}/ghc-%{
 Requires(post): ghc = %{ghc_version}\
 Requires(postun): ghc = %{ghc_version}\
 %if %{with shared}\
-Requires:       ghc-%{-n:%{-n*}}%{!-n:%{pkg_name}} = %{version}-%{release}\
+Requires:       ghc-%{-n:%{-n*}}%{!-n:%{pkg_name}} = %{-v:%{-v*}}%{!-v:%{version}}-%{release}\
 %endif
 
 %ghc_doc_requires Requires:       ghc-doc = %{ghc_version}\
@@ -59,7 +59,7 @@ Requires(post): ghc-doc = %{ghc_version}\
 Requires(postun): ghc-doc = %{ghc_version}
 
 %ghc_prof_requires Requires:       ghc-prof = %{ghc_version}\
-Requires:       ghc-%{-n:%{-n*}}%{!-n:%{pkg_name}}-devel = %{version}-%{release}
+Requires:       ghc-%{-n:%{-n*}}%{!-n:%{pkg_name}}-devel = %{-v:%{-v*}}%{!-v:%{version}}-%{release}
 
 %ghc_lib_package(n:c:h:)\
 %define ghc_pkg_name %{-n:ghc-%{-n*}}%{!-n:ghc-%{pkg_name}}\
