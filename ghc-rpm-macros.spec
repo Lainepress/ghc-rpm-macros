@@ -49,7 +49,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %changelog
 * Fri Jan 15 2010 Jens Petersen <petersen@redhat.com> - 0.5.5-1
-- drop optional 2nd arg for version from ghcdocdir, ghcpkgdir, and
+- drop optional 2nd version arg from ghcdocdir, ghcpkgdir, and
   ghc_gen_filelists: multiversion subpackages are not supported
 - add ghcpkgbasedir
 - bring back some shared conditions which were dropped temporarily
