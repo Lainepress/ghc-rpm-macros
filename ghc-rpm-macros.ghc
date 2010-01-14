@@ -11,29 +11,40 @@ make -f cabal-rpm.mk %{_smp_mflags} \
 %cabal_install %cabal copy --destdir=${RPM_BUILD_ROOT} -v
 
 %ghcdocbasedir %{_docdir}/ghc/html
-%ghcdocdir() %{ghcdocbasedir}/libraries/%{?1}%{!?1:%{pkg_name}}-%{?2}%{!?2:%{version}}
-%ghcpkgdir() %{_libdir}/ghc-%{ghc_version}/%{?1}%{!?1:%{pkg_name}}-%{?2}%{!?2:%{version}}
+%ghcdocdir() %{ghcdocbasedir}/libraries/%{?1}%{!?1:%{pkg_name}}-%{version}
+%ghcpkgbasedir %{_libdir}/ghc-%{ghc_version}
+%ghcpkgdir() %{ghcpkgbasedir}/%{?1}%{!?1:%{pkg_name}}-%{version}
 
 %ghc_gen_filelists() \
-basepkg=%{?1}%{!?1:%{pkg_name}} \
-basefile=ghc-${basepkg} \
-version=%{?2}%{!?2:%{version}} \
+pkgname=%{?1}%{!?1:%{pkg_name}} \
+basefile=ghc-${pkgname} \
+pkgnamever=${pkgname}-%{version} \
 rm -f ${basefile}.files ${basefile}-devel.files ${basefile}-prof.files ${basefile}-doc.files \
 echo "%defattr(-,root,root,-)" > ${basefile}.files \
 if [ -d "${RPM_BUILD_ROOT}%{_docdir}/%{name}-%{version}" ]; then \
   %{!?1:echo "%{_docdir}/%{name}-%{version}" >> ${basefile}%{!?with_shared:-devel}.files} %{?1::} \
 fi \
+%if %{with shared} \
+if [ -d "${RPM_BUILD_ROOT}%{ghcpkgdir}" ]; then \
 echo "%dir %{ghcpkgdir}" >> ${basefile}.files \
-echo "%attr(755,root,root) %{ghcpkgdir}/libHS${basepkg}-${version}-ghc%{ghc_version}.so" >> ${basefile}.files \
+echo "%attr(755,root,root) %{ghcpkgdir}/libHS${pkgnamever}-ghc%{ghc_version}.so" >> ${basefile}.files \
+fi \
+%endif \
 echo "%defattr(-,root,root,-)" > ${basefile}-devel.files \
-echo "%{_libdir}/ghc-%{ghc_version}/package.conf.d/${basepkg}-${version}*.conf" >> ${basefile}-devel.files \
+echo "%{_libdir}/ghc-%{ghc_version}/package.conf.d/${pkgnamever}*.conf" >> ${basefile}-devel.files \
+if [ -d "${RPM_BUILD_ROOT}%{ghcpkgdir}" ]; then \
 find ${RPM_BUILD_ROOT}%{ghcpkgdir} -type d | sed "s/^/%dir /" >> ${basefile}-devel.files \
 find ${RPM_BUILD_ROOT}%{ghcpkgdir} ! \\( -type d -o -name "*_p.a" -o -name "*.p_hi" -o -name "libHS*.so" \\) >> ${basefile}-devel.files \
+fi \
 echo "%defattr(-,root,root,-)" > ${basefile}-prof.files \
+if [ -d "${RPM_BUILD_ROOT}%{ghcpkgdir}" ]; then \
 find ${RPM_BUILD_ROOT}%{ghcpkgdir} \\( -name "*_p.a" -o -name "*.p_hi" \\) >> ${basefile}-prof.files \
-sed -i -e "s!${RPM_BUILD_ROOT}!!g" ${basefile}.files ${basefile}-devel.files ${basefile}-prof.files \
+fi \
 echo "%defattr(-,root,root,-)" > ${basefile}-doc.files \
+if [ -d "${RPM_BUILD_ROOT}%{ghcdocdir}" ]; then \
 echo "%{ghcdocdir}" >> ${basefile}-doc.files \
+fi \
+sed -i -e "s!${RPM_BUILD_ROOT}!!g" ${basefile}.files ${basefile}-devel.files ${basefile}-prof.files \
 %{nil}
 
 %ghc_reindex_haddock ( cd %{ghcdocbasedir}/libraries && [ -x "./gen_contents_index" ] && ./gen_contents_index ) || :
@@ -44,8 +55,8 @@ echo "%{ghcdocdir}" >> ${basefile}-doc.files \
 
 %cabal_pkg_conf \
 %cabal register --gen-pkg-config \
-mkdir -p $RPM_BUILD_ROOT%{_libdir}/ghc-%(ghc --numeric-version)/package.conf.d \
-install --mode=0644 %{pkg_name}-%{version}.conf $RPM_BUILD_ROOT%{_libdir}/ghc-%{ghc_version}/package.conf.d
+mkdir -p $RPM_BUILD_ROOT%{_libdir}/ghc-%{ghc_version}/package.conf.d \
+install --mode=0644 %{?1}%{!?1:%{pkg_name}}-%{version}.conf $RPM_BUILD_ROOT%{_libdir}/ghc-%{ghc_version}/package.conf.d
  
 %ghc_requires Requires:       ghc = %{ghc_version}\
 Requires(post): ghc = %{ghc_version}\

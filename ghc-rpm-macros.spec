@@ -1,5 +1,5 @@
 Name:		ghc-rpm-macros
-Version:	0.5.4
+Version:	0.5.5
 Release:	1%{?dist}
 Summary:	Macros for building packages for GHC
 
@@ -48,6 +48,15 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Fri Jan 15 2010 Jens Petersen <petersen@redhat.com> - 0.5.5-1
+- drop optional 2nd arg for version from ghcdocdir, ghcpkgdir, and
+  ghc_gen_filelists: multiversion subpackages are not supported
+- add ghcpkgbasedir
+- bring back some shared conditions which were dropped temporarily
+- test for ghcpkgdir and ghcdocdir in ghc_gen_filelists
+- allow optional pkgname arg for cabal_pkg_conf
+- can now package gtk2hs
+
 * Mon Jan 11 2010 Jens Petersen <petersen@redhat.com> - 0.5.4-1
 - use -v in ghc_requires and ghc_prof_requires for version
 
