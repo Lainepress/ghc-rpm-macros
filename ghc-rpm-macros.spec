@@ -1,5 +1,5 @@
 Name:		ghc-rpm-macros
-Version:	0.5.5
+Version:	0.5.6
 Release:	1%{?dist}
 Summary:	Macros for building packages for GHC
 
@@ -48,6 +48,10 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon Apr 12 2010 Jens Petersen <petersen@redhat.com> - 0.5.6-1
+- drop unused ghc_pkg_ver macro
+- add ghc_pkg_recache macro
+
 * Fri Jan 15 2010 Jens Petersen <petersen@redhat.com> - 0.5.5-1
 - drop optional 2nd version arg from ghcdocdir, ghcpkgdir, and
   ghc_gen_filelists: multiversion subpackages are not supported

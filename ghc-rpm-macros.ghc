@@ -47,17 +47,13 @@ fi \
 sed -i -e "s!${RPM_BUILD_ROOT}!!g" ${basefile}.files ${basefile}-devel.files ${basefile}-prof.files \
 %{nil}
 
-%ghc_reindex_haddock ( cd %{ghcdocbasedir}/libraries && [ -x "./gen_contents_index" ] && ./gen_contents_index ) || :
-
 %ghc_version %{!?ghc_version_override:%(ghc --numeric-version)}%{?ghc_version_override}
-
-%ghc_pkg_ver() %(ghc-pkg list --global --simple-output %1|sed -e "s/.*%1-//")
 
 %cabal_pkg_conf \
 %cabal register --gen-pkg-config \
 mkdir -p $RPM_BUILD_ROOT%{_libdir}/ghc-%{ghc_version}/package.conf.d \
 install --mode=0644 %{?1}%{!?1:%{pkg_name}}-%{version}.conf $RPM_BUILD_ROOT%{_libdir}/ghc-%{ghc_version}/package.conf.d
- 
+
 %ghc_requires Requires:       ghc = %{ghc_version}\
 Requires(post): ghc = %{ghc_version}\
 Requires(postun): ghc = %{ghc_version}\
@@ -84,7 +80,7 @@ Requires:       ghc-%{-n:%{-n*}}%{!-n:%{pkg_name}}-devel = %{-v:%{-v*}}%{!-v:%{v
 %ghc_package_doc\
 \
 %ghc_package_prof\
-
+%{nil}
 
 %ghc_binlib_package(n:c:h:l:v:s:d:)\
 %define local_pkg_name %{-n:%{-n*}}%{!-n:%{pkg_name}}\
@@ -101,7 +97,9 @@ Group:          System Environment/Libraries\
 This package provides the shared library.\
 \
 %ghc_lib_package\
+%{nil}
 
+%ghc_pkg_recache %{_bindir}/ghc-pkg recache --no-user-package-conf || :
 
 %ghc_package_devel(n:c:h:l:v:s:d:)\
 %define local_pkg_name %{-n:%{-n*}}%{!-n:%{pkg_name}}\
@@ -123,13 +121,16 @@ Group:          Development/Libraries\
 This package contains the development files.\
 \
 %post -n %{ghc_pkg_name}-devel\
-ghc-pkg recache\
+%ghc_pkg_recache\
 \
 %postun -n %{ghc_pkg_name}-devel\
-ghc-pkg recache\
+%ghc_pkg_recache\
 \
 %files -n %{ghc_pkg_name}-devel -f %{ghc_pkg_name}-devel.files\
 %defattr(-,root,root,-)\
+%{nil}
+
+%ghc_reindex_haddock ( cd %{ghcdocbasedir}/libraries && [ -x "./gen_contents_index" ] && ./gen_contents_index ) || :
 
 %ghc_package_doc(n:h:l:v:s:d:)\
 %define local_pkg_name %{-n:%{-n*}}%{!-n:%{pkg_name}}\
@@ -158,6 +159,7 @@ fi\
 \
 %files -n %{ghc_pkg_name}-doc -f %{ghc_pkg_name}-doc.files\
 %defattr(-,root,root,-)\
+%{nil}
 
 %ghc_package_prof(n:h:l:v:s:d:)\
 %define local_pkg_name %{-n:%{-n*}}%{!-n:%{pkg_name}}\
@@ -178,4 +180,4 @@ This package contains the profiling library.\
 \
 %files -n %{ghc_pkg_name}-prof -f %{ghc_pkg_name}-prof.files\
 %defattr(-,root,root,-)\
-
+%{nil}
