@@ -1,20 +1,23 @@
+# "cabal"
 %cabal %{_bindir}/runghc Setup
 
+# configure
 %cabal_configure \
 %cabal configure --prefix=%{_prefix} --libdir=%{_libdir} --docdir=%{_docdir}/%{name}-%{version} --htmldir=%{ghcdocdir} --libsubdir='$compiler/$pkgid' %{?with_shared:--enable-shared} %{?with_dynamic:--ghc-option=-dynamic}
 
-%cabal_makefile \
-%cabal makefile -f cabal-rpm.mk \
-make -f cabal-rpm.mk %{_smp_mflags} \
-%{nil}
-
+# install
 %cabal_install %cabal copy --destdir=${RPM_BUILD_ROOT} -v
 
+# root dir for ghc docs
 %ghcdocbasedir %{_docdir}/ghc/html
+# ghcdocdir [pkgname]
 %ghcdocdir() %{ghcdocbasedir}/libraries/%{?1}%{!?1:%{pkg_name}}-%{version}
+# top library dir
 %ghcpkgbasedir %{_libdir}/ghc-%{ghc_version}
+# ghcpkgdir [pkgname]
 %ghcpkgdir() %{ghcpkgbasedir}/%{?1}%{!?1:%{pkg_name}}-%{version}
 
+# ghc_gen_filelists [pkgname]
 %ghc_gen_filelists() \
 pkgname=%{?1}%{!?1:%{pkg_name}} \
 basefile=ghc-${pkgname} \
@@ -47,13 +50,17 @@ fi \
 sed -i -e "s!${RPM_BUILD_ROOT}!!g" ${basefile}.files ${basefile}-devel.files ${basefile}-prof.files \
 %{nil}
 
+# compiler version
 %ghc_version %{!?ghc_version_override:%(ghc --numeric-version)}%{?ghc_version_override}
 
+# create and install package.conf file
+# cabal_pkg_conf [pkgname]
 %cabal_pkg_conf \
 %cabal register --gen-pkg-config \
 mkdir -p $RPM_BUILD_ROOT%{_libdir}/ghc-%{ghc_version}/package.conf.d \
 install --mode=0644 %{?1}%{!?1:%{pkg_name}}-%{version}.conf $RPM_BUILD_ROOT%{_libdir}/ghc-%{ghc_version}/package.conf.d
 
+# devel pkg basic requires
 %ghc_requires Requires:       ghc = %{ghc_version}\
 Requires(post): ghc = %{ghc_version}\
 Requires(postun): ghc = %{ghc_version}\
@@ -61,13 +68,16 @@ Requires(postun): ghc = %{ghc_version}\
 Requires:       ghc-%{-n:%{-n*}}%{!-n:%{pkg_name}} = %{-v:%{-v*}}%{!-v:%{version}}-%{release}\
 %endif
 
+# doc pkg basic requires
 %ghc_doc_requires Requires:       ghc-doc = %{ghc_version}\
 Requires(post): ghc-doc = %{ghc_version}\
 Requires(postun): ghc-doc = %{ghc_version}
 
+# prof pkg basic requires
 %ghc_prof_requires Requires:       ghc-prof = %{ghc_version}\
 Requires:       ghc-%{-n:%{-n*}}%{!-n:%{pkg_name}}-devel = %{-v:%{-v*}}%{!-v:%{version}}-%{release}
 
+# ghc_lib_package [-n pkgname] [-c cdepslist] [-h pkgdepslist]
 %ghc_lib_package(n:c:h:)\
 %define ghc_pkg_name %{-n:ghc-%{-n*}}%{!-n:ghc-%{pkg_name}}\
 %if %{with shared}\
@@ -82,6 +92,7 @@ Requires:       ghc-%{-n:%{-n*}}%{!-n:%{pkg_name}}-devel = %{-v:%{-v*}}%{!-v:%{v
 %ghc_package_prof\
 %{nil}
 
+# ghc_binlib_package [-n pkgname] [-c cdepslist] [-h pkgdepslist] [-l licensetag] [-v version] [-s summary] [-d description]
 %ghc_binlib_package(n:c:h:l:v:s:d:)\
 %define local_pkg_name %{-n:%{-n*}}%{!-n:%{pkg_name}}\
 %define ghc_pkg_name ghc-%{local_pkg_name}\
@@ -101,6 +112,10 @@ This package provides the shared library.\
 
 %ghc_pkg_recache %{_bindir}/ghc-pkg recache --no-user-package-conf || :
 
+# for docs post and postun
+%ghc_reindex_haddock ( cd %{ghcdocbasedir}/libraries && [ -x "./gen_contents_index" ] && ./gen_contents_index ) || :
+
+# ghc_package_devel [-n pkgname] [-c cdepslist] [-h pkgdepslist] [-l licensetag] [-v version] [-s summary] [-d description]
 %ghc_package_devel(n:c:h:l:v:s:d:)\
 %define local_pkg_name %{-n:%{-n*}}%{!-n:%{pkg_name}}\
 %define ghc_pkg_name ghc-%{local_pkg_name}\
@@ -130,8 +145,10 @@ This package contains the development files.\
 %defattr(-,root,root,-)\
 %{nil}
 
+# re-index haddock
 %ghc_reindex_haddock ( cd %{ghcdocbasedir}/libraries && [ -x "./gen_contents_index" ] && ./gen_contents_index ) || :
 
+# ghc_package_doc [-n pkgname] [-h pkgdepslist] [-l licensetag] [-v version] [-s summary] [-d description]
 %ghc_package_doc(n:h:l:v:s:d:)\
 %define local_pkg_name %{-n:%{-n*}}%{!-n:%{pkg_name}}\
 %define ghc_pkg_name ghc-%{local_pkg_name}\
@@ -161,6 +178,7 @@ fi\
 %defattr(-,root,root,-)\
 %{nil}
 
+# ghc_package_prof [-n pkgname] [-c cdepslist] [-h pkgdepslist] [-l licensetag] [-v version] [-s summary] [-d description]
 %ghc_package_prof(n:h:l:v:s:d:)\
 %define local_pkg_name %{-n:%{-n*}}%{!-n:%{pkg_name}}\
 %define ghc_pkg_name ghc-%{local_pkg_name}\
