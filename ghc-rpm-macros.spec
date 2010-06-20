@@ -1,5 +1,5 @@
 Name:		ghc-rpm-macros
-Version:	0.5.7
+Version:	0.5.8
 Release:	1%{?dist}
 Summary:	Macros for building packages for GHC
 
@@ -48,6 +48,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Sun Jun 20 2010 Jens Petersen <petersen@redhat.com> - 0.5.8-1
+- add ghc_strip_shared to strip shared libraries
+
 * Sun Jun 20 2010 Jens Petersen <petersen@redhat.com> - 0.5.7-1
 - add comments over macros
 - drop unused cabal_makefile

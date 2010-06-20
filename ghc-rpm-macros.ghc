@@ -199,3 +199,6 @@ This package contains the profiling library.\
 %files -n %{ghc_pkg_name}-prof -f %{ghc_pkg_name}-prof.files\
 %defattr(-,root,root,-)\
 %{nil}
+
+# ghc_strip_shared
+%ghc_strip_shared find $RPM_BUILD_ROOT%{ghcpkgbasedir} -name "*.so" | xargs strip
