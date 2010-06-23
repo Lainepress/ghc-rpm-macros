@@ -201,4 +201,7 @@ This package contains the profiling library.\
 %{nil}
 
 # ghc_strip_dynlinked
-%ghc_strip_dynlinked find $RPM_BUILD_ROOT -type f -exec sh -c "file {} | grep -q 'dynamically linked'" \\; -print | xargs strip
+%ghc_strip_dynlinked\
+%if 0%{!?__debug_package:1}\
+find $RPM_BUILD_ROOT -type f -exec sh -c "file {} | grep -q 'dynamically linked'" \\; -print | xargs strip\
+%endif
