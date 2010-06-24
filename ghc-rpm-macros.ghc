@@ -92,18 +92,18 @@ Requires:       ghc-%{-n:%{-n*}}%{!-n:%{pkg_name}}-devel = %{-v:%{-v*}}%{!-v:%{v
 %ghc_package_prof\
 %{nil}
 
-# ghc_binlib_package [-n pkgname] [-c cdepslist] [-h pkgdepslist] [-l licensetag] [-v version] [-s summary] [-d description]
+# ghc_binlib_package [-n pkgname] [-c cdepslist] [-h pkgdepslist] [-l licensetag] [-v version]
 %ghc_binlib_package(n:c:h:l:v:s:d:)\
 %define local_pkg_name %{-n:%{-n*}}%{!-n:%{pkg_name}}\
 %define ghc_pkg_name ghc-%{local_pkg_name}\
 %package -n %{ghc_pkg_name}\
-Summary:        %{-s:%{-s*}}%{!-s:%{?common_summary}%{!?common_summary:%{local_pkg_name}}}\
+Summary:        %{?common_summary}%{!?common_summary:%{local_pkg_name} library}\
 Group:          System Environment/Libraries\
 %{-v:Version:        %{-v*}}\
 %{-l:License:        %{-l*}}\
 \
 %description -n %{ghc_pkg_name}\
-%{-d:%{-d*}}%{!-d:%{?common_description}%{!?common_description:Haskell %{local_pkg_name} library.}}\
+%{?common_description}%{!?common_description:Haskell %{local_pkg_name} library.}\
 \
 This package provides the shared library.\
 \
@@ -115,12 +115,12 @@ This package provides the shared library.\
 # for docs post and postun
 %ghc_reindex_haddock ( cd %{ghcdocbasedir}/libraries && [ -x "./gen_contents_index" ] && ./gen_contents_index ) || :
 
-# ghc_package_devel [-n pkgname] [-c cdepslist] [-h pkgdepslist] [-l licensetag] [-v version] [-s summary] [-d description]
+# ghc_package_devel [-n pkgname] [-c cdepslist] [-h pkgdepslist] [-l licensetag] [-v version]
 %ghc_package_devel(n:c:h:l:v:s:d:)\
 %define local_pkg_name %{-n:%{-n*}}%{!-n:%{pkg_name}}\
 %define ghc_pkg_name ghc-%{local_pkg_name}\
 %package -n %{ghc_pkg_name}-devel\
-Summary:        %{-s:%{-s*}}%{!-s:%{?common_summary}%{!?common_summary:%{local_pkg_name}}} development files\
+Summary:        %{?common_summary}%{!?common_summary:%{local_pkg_name}} development files\
 Group:          Development/Libraries\
 %{-v:Version:        %{-v*}}\
 %{-l:License:        %{-l*}}\
@@ -131,7 +131,7 @@ Group:          Development/Libraries\
 %{-c:Requires:       %{-c*}}\
 \
 %description -n %{ghc_pkg_name}-devel\
-%{-d:%{-d*}}%{!-d:%{?common_description}%{!?common_description:Haskell %{local_pkg_name} library.}}\
+%{?common_description}%{!?common_description:Haskell %{local_pkg_name} library.}\
 \
 This package contains the development files.\
 \
@@ -148,12 +148,12 @@ This package contains the development files.\
 # re-index haddock
 %ghc_reindex_haddock ( cd %{ghcdocbasedir}/libraries && [ -x "./gen_contents_index" ] && ./gen_contents_index ) || :
 
-# ghc_package_doc [-n pkgname] [-h pkgdepslist] [-l licensetag] [-v version] [-s summary] [-d description]
+# ghc_package_doc [-n pkgname] [-h pkgdepslist] [-l licensetag] [-v version]
 %ghc_package_doc(n:h:l:v:s:d:)\
 %define local_pkg_name %{-n:%{-n*}}%{!-n:%{pkg_name}}\
 %define ghc_pkg_name ghc-%{local_pkg_name}\
 %package -n %{ghc_pkg_name}-doc\
-Summary:        Documentation for %{-s:%{-s*}}%{!-s:%{?common_summary}%{!?common_summary:%{local_pkg_name}}}\
+Summary:        Documentation for %{?common_summary}%{!?common_summary:%{local_pkg_name}}\
 Group:          Development/Libraries\
 %{-v:Version:        %{-v*}}\
 %{-l:License:        %{-l*}}\
@@ -162,7 +162,7 @@ Group:          Development/Libraries\
 %{-h:Requires:       %(echo %{-h*} | sed -e "s/\\(ghc-[^, ]*\\)-devel/\\1-doc/g")}\
 \
 %description -n %{ghc_pkg_name}-doc\
-%{-d:%{-d*}}%{!-d:%{?common_description}%{!?common_description:Haskell %{local_pkg_name} library.}}\
+%{?common_description}%{!?common_description:Haskell %{local_pkg_name} library.}\
 \
 This package contains development documentation files.\
 \
@@ -178,12 +178,12 @@ fi\
 %defattr(-,root,root,-)\
 %{nil}
 
-# ghc_package_prof [-n pkgname] [-c cdepslist] [-h pkgdepslist] [-l licensetag] [-v version] [-s summary] [-d description]
+# ghc_package_prof [-n pkgname] [-c cdepslist] [-h pkgdepslist] [-l licensetag] [-v version]
 %ghc_package_prof(n:h:l:v:s:d:)\
 %define local_pkg_name %{-n:%{-n*}}%{!-n:%{pkg_name}}\
 %define ghc_pkg_name ghc-%{local_pkg_name}\
 %package -n %{ghc_pkg_name}-prof\
-Summary:        Profiling libraries for %{-s:%{-s*}}%{!-s:%{?common_summary}%{!?common_summary:%{local_pkg_name}}}\
+Summary:        Profiling libraries for %{?common_summary}%{!?common_summary:%{local_pkg_name}}\
 Group:          Development/Libraries\
 %{-v:Version:        %{-v*}}\
 %{-l:License:        %{-l*}}\
@@ -192,7 +192,7 @@ Group:          Development/Libraries\
 %{-h:Requires:       %(echo %{-h*} | sed -e "s/\\(ghc-[^, ]*\\)-devel/\\1-prof/g")}\
 \
 %description -n %{ghc_pkg_name}-prof\
-%{-d:%{-d*}}%{!-d:%{?common_description}%{!?common_description:Haskell %{local_pkg_name} library.}}\
+%{?common_description}%{!?common_description:Haskell %{local_pkg_name} library.}\
 \
 This package contains the profiling library.\
 \

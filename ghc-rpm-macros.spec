@@ -1,5 +1,5 @@
 Name:		ghc-rpm-macros
-Version:	0.6.0
+Version:	0.6.1
 Release:	1%{?dist}
 Summary:	Macros for building packages for GHC
 
@@ -48,6 +48,10 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Thu Jun 24 2010 Jens Petersen <petersen@redhat.com> - 0.6.1-1
+- drop the summary -s and description -d package options since rpm does not
+  seem to allow white\ space in macro option args anyway
+
 * Wed Jun 23 2010 Jens Petersen <petersen@redhat.com> - 0.6.0-1
 - make ghc_strip_dynlinked conditional on no debug_package
 
