@@ -120,7 +120,7 @@ This package provides the shared library.\
 %define local_pkg_name %{-n:%{-n*}}%{!-n:%{pkg_name}}\
 %define ghc_pkg_name ghc-%{local_pkg_name}\
 %package -n %{ghc_pkg_name}-devel\
-Summary:        %{?common_summary}%{!?common_summary:%{local_pkg_name}} development files\
+Summary:        %{?common_summary}%{!?common_summary:%{local_pkg_name} library} development files\
 Group:          Development/Libraries\
 %{-v:Version:        %{-v*}}\
 %{-l:License:        %{-l*}}\
@@ -153,7 +153,7 @@ This package contains the development files.\
 %define local_pkg_name %{-n:%{-n*}}%{!-n:%{pkg_name}}\
 %define ghc_pkg_name ghc-%{local_pkg_name}\
 %package -n %{ghc_pkg_name}-doc\
-Summary:        Documentation for %{?common_summary}%{!?common_summary:%{local_pkg_name}}\
+Summary:        Documentation for %{?common_summary}%{!?common_summary:%{local_pkg_name} library}\
 Group:          Development/Libraries\
 %{-v:Version:        %{-v*}}\
 %{-l:License:        %{-l*}}\
