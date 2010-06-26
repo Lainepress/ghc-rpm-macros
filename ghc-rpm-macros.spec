@@ -1,5 +1,5 @@
 Name:		ghc-rpm-macros
-Version:	0.6.2
+Version:	0.7.0
 Release:	1%{?dist}
 Summary:	Macros for building packages for GHC
 
@@ -48,6 +48,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Sat Jun 26 2010 Jens Petersen <petersen@redhat.com> - 0.7.0-1
+- new ghc_bin_build, ghc_bin_install, ghc_lib_build, ghc_lib_install
+
 * Thu Jun 24 2010 Jens Petersen <petersen@redhat.com> - 0.6.2-1
 - a couple more fallback summary tweaks
 

@@ -205,3 +205,26 @@ This package contains the profiling library.\
 %if 0%{!?__debug_package:1}\
 find $RPM_BUILD_ROOT -type f -exec sh -c "file {} | grep -q 'dynamically linked'" \\; -print | xargs strip\
 %endif
+
+# ghc_bin_build
+%ghc_bin_build\
+%cabal_configure --ghc\
+%cabal build
+
+# ghc_lib_build
+%ghc_lib_build\
+%cabal_configure --ghc -p\
+%cabal build\
+%cabal haddock
+
+# ghc_bin_install
+%ghc_bin_install\
+%cabal_install\
+%ghc_strip_dynlinked
+
+# ghc_lib_install
+%ghc_lib_install\
+%cabal_install\
+%cabal_pkg_conf\
+%ghc_gen_filelists\
+%ghc_strip_dynlinked
