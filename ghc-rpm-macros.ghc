@@ -93,7 +93,7 @@ Requires:       ghc-%{-n:%{-n*}}%{!-n:%{pkg_name}}-devel = %{-v:%{-v*}}%{!-v:%{v
 %{nil}
 
 # ghc_binlib_package [-n pkgname] [-c cdepslist] [-h pkgdepslist] [-l licensetag] [-v version]
-%ghc_binlib_package(n:c:h:l:v:s:d:)\
+%ghc_binlib_package(n:c:h:l:v:)\
 %define local_pkg_name %{-n:%{-n*}}%{!-n:%{pkg_name}}\
 %define ghc_pkg_name ghc-%{local_pkg_name}\
 %package -n %{ghc_pkg_name}\
@@ -112,11 +112,8 @@ This package provides the shared library.\
 
 %ghc_pkg_recache %{_bindir}/ghc-pkg recache --no-user-package-conf || :
 
-# for docs post and postun
-%ghc_reindex_haddock ( cd %{ghcdocbasedir}/libraries && [ -x "./gen_contents_index" ] && ./gen_contents_index ) || :
-
 # ghc_package_devel [-n pkgname] [-c cdepslist] [-h pkgdepslist] [-l licensetag] [-v version]
-%ghc_package_devel(n:c:h:l:v:s:d:)\
+%ghc_package_devel(n:c:h:l:v:)\
 %define local_pkg_name %{-n:%{-n*}}%{!-n:%{pkg_name}}\
 %define ghc_pkg_name ghc-%{local_pkg_name}\
 %package -n %{ghc_pkg_name}-devel\
@@ -145,11 +142,12 @@ This package contains the development files.\
 %defattr(-,root,root,-)\
 %{nil}
 
+# for docs post and postun
 # re-index haddock
 %ghc_reindex_haddock ( cd %{ghcdocbasedir}/libraries && [ -x "./gen_contents_index" ] && ./gen_contents_index ) || :
 
 # ghc_package_doc [-n pkgname] [-h pkgdepslist] [-l licensetag] [-v version]
-%ghc_package_doc(n:h:l:v:s:d:)\
+%ghc_package_doc(n:h:l:v:)\
 %define local_pkg_name %{-n:%{-n*}}%{!-n:%{pkg_name}}\
 %define ghc_pkg_name ghc-%{local_pkg_name}\
 %package -n %{ghc_pkg_name}-doc\
@@ -179,7 +177,7 @@ fi\
 %{nil}
 
 # ghc_package_prof [-n pkgname] [-c cdepslist] [-h pkgdepslist] [-l licensetag] [-v version]
-%ghc_package_prof(n:h:l:v:s:d:)\
+%ghc_package_prof(n:h:l:v:)\
 %define local_pkg_name %{-n:%{-n*}}%{!-n:%{pkg_name}}\
 %define ghc_pkg_name ghc-%{local_pkg_name}\
 %package -n %{ghc_pkg_name}-prof\
@@ -215,7 +213,7 @@ find $RPM_BUILD_ROOT -type f -exec sh -c "file {} | grep -q 'dynamically linked'
 %ghc_lib_build\
 %cabal_configure --ghc -p\
 %cabal build\
-%cabal haddock
+%cabal haddock %{?with_hscolour:--hyperlink-source}
 
 # ghc_bin_install
 %ghc_bin_install\
