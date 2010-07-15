@@ -22,7 +22,7 @@
 pkgname=%{?1}%{!?1:%{pkg_name}} \
 basefile=ghc-${pkgname} \
 pkgnamever=${pkgname}-%{version} \
-rm -f ${basefile}.files ${basefile}-devel.files ${basefile}-prof.files ${basefile}-doc.files \
+rm -f ${basefile}.files ${basefile}-devel.files ${basefile}-prof.files \
 echo "%defattr(-,root,root,-)" > ${basefile}.files \
 if [ -d "${RPM_BUILD_ROOT}%{_docdir}/%{name}-%{version}" ]; then \
   %{!?1:echo "%{_docdir}/%{name}-%{version}" >> ${basefile}%{!?with_shared:-devel}.files} %{?1::} \
@@ -43,9 +43,8 @@ echo "%defattr(-,root,root,-)" > ${basefile}-prof.files \
 if [ -d "${RPM_BUILD_ROOT}%{ghcpkgdir}" ]; then \
 find ${RPM_BUILD_ROOT}%{ghcpkgdir} \\( -name "*_p.a" -o -name "*.p_hi" \\) >> ${basefile}-prof.files \
 fi \
-echo "%defattr(-,root,root,-)" > ${basefile}-doc.files \
 if [ -d "${RPM_BUILD_ROOT}%{ghcdocdir}" ]; then \
-echo "%{ghcdocdir}" >> ${basefile}-doc.files \
+echo "%{ghcdocdir}" >> ${basefile}-devel.files \
 fi \
 sed -i -e "s!${RPM_BUILD_ROOT}!!g" ${basefile}.files ${basefile}-devel.files ${basefile}-prof.files \
 %{nil}
@@ -77,8 +76,8 @@ Requires(postun): ghc-doc = %{ghc_version}
 %ghc_prof_requires Requires:       ghc-prof = %{ghc_version}\
 Requires:       ghc-%{-n:%{-n*}}%{!-n:%{pkg_name}}-devel = %{-v:%{-v*}}%{!-v:%{version}}-%{release}
 
-# ghc_lib_package [-n pkgname] [-c cdepslist] [-h pkgdepslist]
-%ghc_lib_package(n:c:h:)\
+# ghc_lib_package [-n pkgname] [-c cdepslist] [-h pkgdepslist] [-o obsolete-docver]
+%ghc_lib_package(n:c:h:o:)\
 %define ghc_pkg_name %{-n:ghc-%{-n*}}%{!-n:ghc-%{pkg_name}}\
 %if %{with shared}\
 %files -n %{ghc_pkg_name} -f %{ghc_pkg_name}.files\
@@ -87,13 +86,11 @@ Requires:       ghc-%{-n:%{-n*}}%{!-n:%{pkg_name}}-devel = %{-v:%{-v*}}%{!-v:%{v
 \
 %ghc_package_devel\
 \
-%ghc_package_doc\
-\
 %ghc_package_prof\
 %{nil}
 
-# ghc_binlib_package [-n pkgname] [-c cdepslist] [-h pkgdepslist] [-l licensetag] [-v version]
-%ghc_binlib_package(n:c:h:l:v:)\
+# ghc_binlib_package [-n pkgname] [-c cdepslist] [-h pkgdepslist] [-l licensetag] [-v version] [-o obsolete-docver]
+%ghc_binlib_package(n:c:h:l:v:o:)\
 %define local_pkg_name %{-n:%{-n*}}%{!-n:%{pkg_name}}\
 %define ghc_pkg_name ghc-%{local_pkg_name}\
 %package -n %{ghc_pkg_name}\
@@ -112,8 +109,11 @@ This package provides the shared library.\
 
 %ghc_pkg_recache %{_bindir}/ghc-pkg recache --no-user-package-conf || :
 
-# ghc_package_devel [-n pkgname] [-c cdepslist] [-h pkgdepslist] [-l licensetag] [-v version]
-%ghc_package_devel(n:c:h:l:v:)\
+# for docs post and postun
+%ghc_reindex_haddock ( cd %{ghcdocbasedir}/libraries && [ -x "./gen_contents_index" ] && ./gen_contents_index ) || :
+
+# ghc_package_devel [-n pkgname] [-c cdepslist] [-h pkgdepslist] [-l licensetag] [-v version] [-o obsolete-docver]
+%ghc_package_devel(n:c:h:l:v:o:)\
 %define local_pkg_name %{-n:%{-n*}}%{!-n:%{pkg_name}}\
 %define ghc_pkg_name ghc-%{local_pkg_name}\
 %package -n %{ghc_pkg_name}-devel\
@@ -122,10 +122,13 @@ Group:          Development/Libraries\
 %{-v:Version:        %{-v*}}\
 %{-l:License:        %{-l*}}\
 %{?ghc_requires}\
+%{?ghc_doc_requires}\
 %{!-h:%{?ghc_pkg_deps:Requires:       %{ghc_pkg_deps}}}\
 %{-h:Requires:       %{-h*}}\
 %{!-c:%{?ghc_pkg_c_deps:Requires:       %{ghc_pkg_c_deps}}}\
 %{-c:Requires:       %{-c*}}\
+%{-o:Obsoletes:      %{ghc_pkg_name}-doc < %{-o*}}\
+%{-o:Provides:       %{ghc_pkg_name}-doc = %{version}-%{release}}\
 \
 %description -n %{ghc_pkg_name}-devel\
 %{?common_description}%{!?common_description:Haskell %{local_pkg_name} library.}\
@@ -134,45 +137,13 @@ This package contains the development files.\
 \
 %post -n %{ghc_pkg_name}-devel\
 %ghc_pkg_recache\
+%ghc_reindex_haddock\
 \
 %postun -n %{ghc_pkg_name}-devel\
 %ghc_pkg_recache\
-\
-%files -n %{ghc_pkg_name}-devel -f %{ghc_pkg_name}-devel.files\
-%defattr(-,root,root,-)\
-%{nil}
-
-# for docs post and postun
-# re-index haddock
-%ghc_reindex_haddock ( cd %{ghcdocbasedir}/libraries && [ -x "./gen_contents_index" ] && ./gen_contents_index ) || :
-
-# ghc_package_doc [-n pkgname] [-h pkgdepslist] [-l licensetag] [-v version]
-%ghc_package_doc(n:h:l:v:)\
-%define local_pkg_name %{-n:%{-n*}}%{!-n:%{pkg_name}}\
-%define ghc_pkg_name ghc-%{local_pkg_name}\
-%package -n %{ghc_pkg_name}-doc\
-Summary:        Documentation for %{?common_summary}%{!?common_summary:%{local_pkg_name} library}\
-Group:          Development/Libraries\
-%{-v:Version:        %{-v*}}\
-%{-l:License:        %{-l*}}\
-%{?ghc_doc_requires}\
-%{!-h:%{?ghc_pkg_deps:Requires:       %(echo %{ghc_pkg_deps} | sed -e "s/\\(ghc-[^, ]*\\)-devel/\\1-doc/g")}}\
-%{-h:Requires:       %(echo %{-h*} | sed -e "s/\\(ghc-[^, ]*\\)-devel/\\1-doc/g")}\
-\
-%description -n %{ghc_pkg_name}-doc\
-%{?common_description}%{!?common_description:Haskell %{local_pkg_name} library.}\
-\
-This package contains development documentation files.\
-\
-%post -n %{ghc_pkg_name}-doc\
 %ghc_reindex_haddock\
 \
-%postun -n %{ghc_pkg_name}-doc\
-if [ "$1" -eq 0 ] ; then\
-  %ghc_reindex_haddock\
-fi\
-\
-%files -n %{ghc_pkg_name}-doc -f %{ghc_pkg_name}-doc.files\
+%files -n %{ghc_pkg_name}-devel -f %{ghc_pkg_name}-devel.files\
 %defattr(-,root,root,-)\
 %{nil}
 

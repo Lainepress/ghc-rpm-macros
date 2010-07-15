@@ -1,5 +1,5 @@
 Name:		ghc-rpm-macros
-Version:	0.7.1
+Version:	0.8.0
 Release:	1%{?dist}
 Summary:	Macros for building packages for GHC
 
@@ -48,6 +48,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Fri Jul 16 2010 Jens Petersen <petersen@redhat.com> - 0.8.0-1
+- merge -doc into -devel and provide -o obsoletes doc subpackage option
+
 * Mon Jun 28 2010 Jens Petersen <petersen@redhat.com> - 0.7.1-1
 - support hscolour'ing of src from haddock
 - really remove redundant summary and description option flags
