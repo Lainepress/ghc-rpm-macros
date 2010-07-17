@@ -1,5 +1,5 @@
 Name:		ghc-rpm-macros
-Version:	0.8.0
+Version:	0.8.1
 Release:	1%{?dist}
 Summary:	Macros for building packages for GHC
 
@@ -48,6 +48,10 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Fri Jul 16 2010 Jens Petersen <petersen@redhat.com> - 0.8.1-1
+- fix ghc_strip_dynlinked for no dynlinked files
+- devel should provide doc also when not obsoleting
+
 * Fri Jul 16 2010 Jens Petersen <petersen@redhat.com> - 0.8.0-1
 - merge -doc into -devel and provide -o obsoletes doc subpackage option
 
