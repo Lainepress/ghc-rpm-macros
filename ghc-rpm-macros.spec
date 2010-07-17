@@ -49,7 +49,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %changelog
 * Fri Jul 16 2010 Jens Petersen <petersen@redhat.com> - 0.8.1-1
-- fix ghc_strip_dynlinked for no dynlinked files
+- fix ghc_strip_dynlinked when no dynlinked files
 - devel should provide doc also when not obsoleting
 
 * Fri Jul 16 2010 Jens Petersen <petersen@redhat.com> - 0.8.0-1
