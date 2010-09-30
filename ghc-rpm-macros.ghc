@@ -23,17 +23,17 @@ pkgname=%{?1}%{!?1:%{pkg_name}} \
 basefile=ghc-${pkgname} \
 pkgnamever=${pkgname}-%{version} \
 rm -f ${basefile}.files ${basefile}-devel.files ${basefile}-prof.files \
-echo "%defattr(-,root,root,-)" > ${basefile}.files \
-if [ -d "${RPM_BUILD_ROOT}%{_docdir}/%{name}-%{version}" ]; then \
-  %{!?1:echo "%{_docdir}/%{name}-%{version}" >> ${basefile}%{?without_shared:-devel}.files} %{?1::} \
-fi \
 %if 0%{!?without_shared:1} \
+echo "%defattr(-,root,root,-)" > ${basefile}.files \
 if [ -d "${RPM_BUILD_ROOT}%{ghcpkgdir}" ]; then \
 echo "%dir %{ghcpkgdir}" >> ${basefile}.files \
 echo "%attr(755,root,root) %{ghcpkgdir}/libHS${pkgnamever}-ghc%{ghc_version}.so" >> ${basefile}.files \
 fi \
 %endif \
 echo "%defattr(-,root,root,-)" > ${basefile}-devel.files \
+if [ -d "${RPM_BUILD_ROOT}%{_docdir}/%{name}-%{version}" ]; then \
+  %{!?1:echo "%{_docdir}/%{name}-%{version}" >> ${basefile}%{?without_shared:-devel}.files} %{?1::} \
+fi \
 echo "%{ghcpkgbasedir}/package.conf.d/${pkgnamever}*.conf" >> ${basefile}-devel.files \
 if [ -d "${RPM_BUILD_ROOT}%{ghcpkgdir}" ]; then \
 find ${RPM_BUILD_ROOT}%{ghcpkgdir} -type d | sed "s/^/%dir /" >> ${basefile}-devel.files \
@@ -46,7 +46,7 @@ fi \
 if [ -d "${RPM_BUILD_ROOT}%{ghcdocdir}" ]; then \
 echo "%{ghcdocdir}" >> ${basefile}-devel.files \
 fi \
-sed -i -e "s!${RPM_BUILD_ROOT}!!g" ${basefile}.files ${basefile}-devel.files ${basefile}-prof.files \
+sed -i -e "s!${RPM_BUILD_ROOT}!!g" %{!?without_shared:${basefile}.files} ${basefile}-devel.files ${basefile}-prof.files \
 %{nil}
 
 # compiler version
@@ -102,7 +102,9 @@ Group:          System Environment/Libraries\
 %description -n %{ghc_pkg_name}\
 %{?common_description}%{!?common_description:Haskell %{local_pkg_name} library.}\
 \
+%if 0%{!?without_shared:1} \
 This package provides the shared library.\
+%endif \
 \
 %ghc_lib_package\
 %{nil}

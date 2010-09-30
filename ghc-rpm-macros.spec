@@ -1,5 +1,5 @@
 Name:		ghc-rpm-macros
-Version:	0.9.0
+Version:	0.9.1
 Release:	1%{?dist}
 Summary:	Macros for building packages for GHC
 
@@ -53,11 +53,14 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
-* Sat Sep 25 2010 Jens Petersen <petersen@redhat.com> - 0.9.0-1
-- add ghc-deps.sh to add ghc package hash rpm metadata provides and requires
+* Thu Sep 30 2010 Jens Petersen <petersen@redhat.com> - 0.9.1-1
+- fix without_shared build so it actually works
+
+* Thu Sep 30 2010 Jens Petersen <petersen@redhat.com> - 0.9.0-1
+- add rpm provides and requires script ghc-deps.sh for package hash metadata
 - turn on hash provides and disable debuginfo by default
 - make shared and hscolour default
-- use without_shared and without_hscolour to disble them
+- use without_shared and without_hscolour to disable them
 - add ghc_pkg_obsoletes for obsoleting old packages
 - use ghcpkgbasedir
 - always obsolete -doc packages, but keep -o for now for backward compatibility
