@@ -1,5 +1,5 @@
 Name:		ghc-rpm-macros
-Version:	0.8.1
+Version:	0.9.0
 Release:	1%{?dist}
 Summary:	Macros for building packages for GHC
 
@@ -13,14 +13,15 @@ URL:		https://fedoraproject.org/wiki/Haskell_SIG
 Source0:	ghc-rpm-macros.ghc
 Source1:	COPYING
 Source2:	AUTHORS
+Source3:	ghc-deps.sh
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildArch:	noarch
 
 %description
 A set of macros for building GHC packages following the Haskell Guidelines
-of the Haskell SIG. This package probably shouldn't be installed on its own
-as GHC is needed in order to make use of these macros.
+of the Fedora Haskell SIG. This package probably shouldn't be installed on
+its own as GHC is needed in order to make use of these macros.
 
 %prep
 %setup -c -T
@@ -34,7 +35,10 @@ echo no build stage needed
 %install
 rm -rf $RPM_BUILD_ROOT
 mkdir -p ${RPM_BUILD_ROOT}/%{_sysconfdir}/rpm
-cp -p %{SOURCE0} ${RPM_BUILD_ROOT}/%{_sysconfdir}/rpm/macros.ghc
+install -p -m 0644 %{SOURCE0} ${RPM_BUILD_ROOT}/%{_sysconfdir}/rpm/macros.ghc
+
+mkdir -p ${RPM_BUILD_ROOT}/%{_prefix}/lib/rpm
+install -p %{SOURCE3} ${RPM_BUILD_ROOT}/%{_prefix}/lib/rpm
 
 
 %clean
@@ -45,9 +49,19 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root,-)
 %doc COPYING AUTHORS
 %config(noreplace) %{_sysconfdir}/rpm/macros.ghc
+%{_prefix}/lib/rpm
 
 
 %changelog
+* Sat Sep 25 2010 Jens Petersen <petersen@redhat.com> - 0.9.0-1
+- add ghc-deps.sh to add ghc package hash rpm metadata provides and requires
+- turn on hash provides and disable debuginfo by default
+- make shared and hscolour default
+- use without_shared and without_hscolour to disble them
+- add ghc_pkg_obsoletes for obsoleting old packages
+- use ghcpkgbasedir
+- always obsolete -doc packages, but keep -o for now for backward compatibility
+
 * Fri Jul 16 2010 Jens Petersen <petersen@redhat.com> - 0.8.1-1
 - fix ghc_strip_dynlinked when no dynlinked files
 - devel should provide doc also when not obsoleting
