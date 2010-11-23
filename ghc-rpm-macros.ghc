@@ -61,10 +61,13 @@ install --mode=0644 %{?1}%{!?1:%{pkg_name}}-%{version}.conf $RPM_BUILD_ROOT%{ghc
 
 # devel pkg basic requires
 %ghc_devel_requires Requires(post): ghc = %{ghc_version}\
-Requires(postun): ghc = %{ghc_version}
+Requires(postun): ghc = %{ghc_version}\
+%if 0%{!?without_shared:1}\
+Requires:       ghc-%{-n:%{-n*}}%{!-n:%{pkg_name}} = %{-v:%{-v*}}%{!-v:%{version}}-%{release}\
+%endif
 
 # prof pkg basic requires
-%ghc_prof_requires \
+%ghc_prof_requires Requires:       ghc-%{-n:%{-n*}}%{!-n:%{pkg_name}}-devel = %{-v:%{-v*}}%{!-v:%{version}}-%{release}\
 %{nil}
 
 # ghc_lib_package [-n pkgname] [-c cdepslist] [-h pkgdepslist] (-o deprecated no-op)

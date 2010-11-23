@@ -1,5 +1,5 @@
 Name:		ghc-rpm-macros
-Version:	0.10.0
+Version:	0.10.1
 Release:	1%{?dist}
 Summary:	Macros for building packages for GHC
 
@@ -53,8 +53,16 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Tue Nov 23 2010 Jens Petersen <petersen@redhat.com> - 0.10.1-1
+- bring back the explicit n-v-r internal package requires for devel and prof packages
+
 * Mon Nov 22 2010 Jens Petersen <petersen@redhat.com> - 0.10.0-1
-- turn pkg hash metadata (for ghc-7 builds)
+- turn on pkg hash metadata (for ghc-7 builds)
+- ghc-deps.sh now requires an extra buildroot/ghcpkgbasedir arg
+- automatic internal package deps from prof to devel to base
+- rename ghc_requires to ghc_devel_requires
+- drop ghc_doc_requires
+- ghc_reindex_haddock is deprecated and now a no-op
 
 * Thu Sep 30 2010 Jens Petersen <petersen@redhat.com> - 0.9.1-1
 - fix without_shared build so it actually works
