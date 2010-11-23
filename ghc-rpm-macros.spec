@@ -1,5 +1,5 @@
 Name:		ghc-rpm-macros
-Version:	0.10.1
+Version:	0.10.2
 Release:	1%{?dist}
 Summary:	Macros for building packages for GHC
 
@@ -53,6 +53,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Tue Nov 23 2010 Jens Petersen <petersen@redhat.com> - 0.10.2-1
+- ignore ghc's builtin pseudo-libs
+
 * Tue Nov 23 2010 Jens Petersen <petersen@redhat.com> - 0.10.1-1
 - bring back the explicit n-v-r internal package requires for devel and prof packages
 

@@ -12,13 +12,19 @@ MODE=$1
 PKGBASEDIR=$2
 PKGCONFDIR=$PKGBASEDIR/package.conf.d
 
+case $MODE in
+    --provides) FIELD=id ;;
+    --requires) FIELD=depends ;;
+    *) echo "`basename $0`: Need --provides or --requires" ; exit 1
+esac
+
 files=$(cat)
 
 #set -x
 
 if [ -d "$PKGCONFDIR" ]; then
  for i in $files; do
-  LIB_FILE=$(echo $i | grep /libHS | grep -v /libHSrts)
+  LIB_FILE=$(echo $i | grep /libHS | egrep -v "$PKGBASEDIR/libHS")
   if [ -n "$LIB_FILE" ]; then
     case $LIB_FILE in
       *.so) META=ghc ;;
@@ -26,15 +32,13 @@ if [ -d "$PKGCONFDIR" ]; then
       *.a) META=ghc-devel SELF=ghc ;;
     esac
     if [ -n "$META" ]; then
-      case $MODE in
-	--provides) FIELD=id ;;
-	--requires) FIELD=depends ;;
-	*) echo "`basename $0`: Need --provides or --requires" ; exit 1
-      esac
-      PKGVER=$(echo $LIB_FILE | sed -e "s%$PKGBASEDIR/*\([^/]\+\)/libHS.*%\1%")
+      PKGVER=$(echo $LIB_FILE | sed -e "s%$PKGBASEDIR/\([^/]\+\)/libHS.*%\1%")
       HASHS=$(ghc-pkg -f $PKGCONFDIR field $PKGVER $FIELD | sed -e "s/^$FIELD: \+//")
       for i in $HASHS; do
-	echo $i | sed -e "s/\(.*\)-\(.*\)/$META(\1) = \2/"
+	  case $i in
+	      *-*) echo $i | sed -e "s/\(.*\)-\(.*\)/$META(\1) = \2/" ;;
+	      *) ;;
+	  esac
       done
       if [ "$MODE" = "--requires" -a -n "$SELF" ]; then
 	HASHS=$(ghc-pkg -f $PKGCONFDIR field $PKGVER id | sed -e "s/^id: \+//")
