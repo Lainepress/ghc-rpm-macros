@@ -1,5 +1,5 @@
 Name:		ghc-rpm-macros
-Version:	0.9.1
+Version:	0.10.0
 Release:	1%{?dist}
 Summary:	Macros for building packages for GHC
 
@@ -53,6 +53,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon Nov 22 2010 Jens Petersen <petersen@redhat.com> - 0.10.0-1
+- turn pkg hash metadata (for ghc-7 builds)
+
 * Thu Sep 30 2010 Jens Petersen <petersen@redhat.com> - 0.9.1-1
 - fix without_shared build so it actually works
 

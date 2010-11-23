@@ -60,21 +60,12 @@ mkdir -p $RPM_BUILD_ROOT%{ghcpkgbasedir}/package.conf.d \
 install --mode=0644 %{?1}%{!?1:%{pkg_name}}-%{version}.conf $RPM_BUILD_ROOT%{ghcpkgbasedir}/package.conf.d
 
 # devel pkg basic requires
-%ghc_requires Requires:       ghc = %{ghc_version}\
-Requires(post): ghc = %{ghc_version}\
-Requires(postun): ghc = %{ghc_version}\
-%if 0%{!?without_shared:1}\
-Requires:       ghc-%{-n:%{-n*}}%{!-n:%{pkg_name}} = %{-v:%{-v*}}%{!-v:%{version}}-%{release}\
-%endif
-
-# doc pkg basic requires
-%ghc_doc_requires Requires:       ghc-doc = %{ghc_version}\
-Requires(post): ghc-doc = %{ghc_version}\
-Requires(postun): ghc-doc = %{ghc_version}
+%ghc_devel_requires Requires(post): ghc = %{ghc_version}\
+Requires(postun): ghc = %{ghc_version}
 
 # prof pkg basic requires
-%ghc_prof_requires Requires:       ghc-prof = %{ghc_version}\
-Requires:       ghc-%{-n:%{-n*}}%{!-n:%{pkg_name}}-devel = %{-v:%{-v*}}%{!-v:%{version}}-%{release}
+%ghc_prof_requires \
+%{nil}
 
 # ghc_lib_package [-n pkgname] [-c cdepslist] [-h pkgdepslist] (-o deprecated no-op)
 %ghc_lib_package(n:c:h:o:)\
@@ -112,13 +103,14 @@ This package provides the shared library.\
 %ghc_pkg_recache %{_bindir}/ghc-pkg recache --no-user-package-conf || :
 
 # for docs post and postun
-%ghc_reindex_haddock ( cd %{ghcdocbasedir}/libraries && [ -x "./gen_contents_index" ] && ./gen_contents_index ) || :
+%ghc_reindex_haddock\
+%{nil}
 
 # ghc_package_devel [-n pkgname] [-c cdepslist] [-h pkgdepslist] [-l licensetag] [-v version] (-o deprecated no-op)
 %ghc_package_devel(n:c:h:l:v:o:)\
 %global _use_internal_dependency_generator 0\
-%global __find_provides /usr/lib/rpm/ghc-deps.sh --provides\
-#%%global __find_requires /usr/lib/rpm/ghc-deps.sh --requires\
+%global __find_provides /usr/lib/rpm/ghc-deps.sh --provides %{buildroot}%{ghcpkgbasedir}\
+%global __find_requires /usr/lib/rpm/ghc-deps.sh --requires %{buildroot}%{ghcpkgbasedir}\
 %global debug_package %{nil}\
 %define local_pkg_name %{-n:%{-n*}}%{!-n:%{pkg_name}}\
 %define ghc_pkg_name ghc-%{local_pkg_name}\
@@ -127,8 +119,7 @@ Summary:        %{?common_summary}%{!?common_summary:%{local_pkg_name} library} 
 Group:          Development/Libraries\
 %{-v:Version:        %{-v*}}\
 %{-l:License:        %{-l*}}\
-%{?ghc_requires}\
-%{?ghc_doc_requires}\
+%{?ghc_devel_requires}\
 %{!-h:%{?ghc_pkg_deps:Requires:       %{ghc_pkg_deps}}}\
 %{-h:Requires:       %{-h*}}\
 %{!-c:%{?ghc_pkg_c_deps:Requires:       %{ghc_pkg_c_deps}}}\
