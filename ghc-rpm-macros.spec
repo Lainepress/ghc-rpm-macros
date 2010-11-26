@@ -53,6 +53,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Fri Nov 26 2010 Jens Petersen <petersen@redhat.com>
+- drop with_devhelp since --html-help option gone from haddock-2.8.0
+
 * Tue Nov 23 2010 Jens Petersen <petersen@redhat.com> - 0.10.2-1
 - ignore ghc's builtin pseudo-libs
 

@@ -187,7 +187,7 @@ find $RPM_BUILD_ROOT -type f -exec sh -c "file {} | grep -q 'dynamically linked'
 %ghc_lib_build\
 %cabal_configure --ghc -p\
 %cabal build\
-%cabal haddock %{!?without_hscolour:--hyperlink-source} %{?with_devhelp:--haddock-option=--html-help=devhelp}
+%cabal haddock %{!?without_hscolour:--hyperlink-source}
 
 # ghc_bin_install
 %ghc_bin_install\
