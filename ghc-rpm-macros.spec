@@ -1,5 +1,5 @@
 Name:		ghc-rpm-macros
-Version:	0.10.2
+Version:	0.10.3
 Release:	1%{?dist}
 Summary:	Macros for building packages for GHC
 
@@ -53,6 +53,11 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon Dec 20 2010 Jens Petersen <petersen@redhat.com> - 0.10.3-1
+- revert disabling debug_package, since with redhat-rpm-config installed
+  the behaviour depended on the position of ghc_lib_package in the spec file
+  (reported by narasim_7)
+
 * Fri Nov 26 2010 Jens Petersen <petersen@redhat.com>
 - drop with_devhelp since --html-help option gone from haddock-2.8.0
 

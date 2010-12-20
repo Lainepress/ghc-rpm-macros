@@ -114,7 +114,6 @@ This package provides the shared library.\
 %global _use_internal_dependency_generator 0\
 %global __find_provides /usr/lib/rpm/ghc-deps.sh --provides %{buildroot}%{ghcpkgbasedir}\
 %global __find_requires /usr/lib/rpm/ghc-deps.sh --requires %{buildroot}%{ghcpkgbasedir}\
-%global debug_package %{nil}\
 %define local_pkg_name %{-n:%{-n*}}%{!-n:%{pkg_name}}\
 %define ghc_pkg_name ghc-%{local_pkg_name}\
 %package -n %{ghc_pkg_name}-devel\
