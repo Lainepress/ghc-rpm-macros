@@ -1,5 +1,5 @@
 Name:		ghc-rpm-macros
-Version:	0.10.3
+Version:	0.10.4
 Release:	1%{?dist}
 Summary:	Macros for building packages for GHC
 
@@ -14,7 +14,6 @@ Source0:	ghc-rpm-macros.ghc
 Source1:	COPYING
 Source2:	AUTHORS
 Source3:	ghc-deps.sh
-BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildArch:	noarch
 
@@ -33,16 +32,11 @@ echo no build stage needed
 
 
 %install
-rm -rf $RPM_BUILD_ROOT
 mkdir -p ${RPM_BUILD_ROOT}/%{_sysconfdir}/rpm
 install -p -m 0644 %{SOURCE0} ${RPM_BUILD_ROOT}/%{_sysconfdir}/rpm/macros.ghc
 
 mkdir -p ${RPM_BUILD_ROOT}/%{_prefix}/lib/rpm
 install -p %{SOURCE3} ${RPM_BUILD_ROOT}/%{_prefix}/lib/rpm
-
-
-%clean
-rm -rf $RPM_BUILD_ROOT
 
 
 %files
@@ -53,6 +47,13 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Thu Dec 30 2010 Jens Petersen <petersen@redhat.com> - 0.10.4-1
+- add support for subpackaging ghc's libraries:
+- deprecate ghcpkgdir and ghcdocdir from now on
+- ghc_gen_filelists optional arg is now name-version
+- ghc_lib_build, ghc_lib_install, cabal_pkg_conf now take optional
+  name-version arg
+
 * Mon Dec 20 2010 Jens Petersen <petersen@redhat.com> - 0.10.3-1
 - revert disabling debug_package, since with redhat-rpm-config installed
   the behaviour depended on the position of ghc_lib_package in the spec file

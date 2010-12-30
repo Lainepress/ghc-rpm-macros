@@ -3,61 +3,65 @@
 
 # configure
 %cabal_configure \
-%cabal configure --prefix=%{_prefix} --libdir=%{_libdir} --docdir=%{_docdir}/%{name}-%{version} --htmldir=%{ghcdocdir} --libsubdir='$compiler/$pkgid' %{!?without_shared:--enable-shared} %{?with_dynamic:--ghc-option=-dynamic}
+%cabal configure --prefix=%{_prefix} --libdir=%{_libdir} --docdir=%{_docdir}/%{name}-%{version} --htmldir=%{ghcdocdir} --libsubdir='$compiler/$pkgid' --ghc %{!?without_shared:--enable-shared} %{?with_dynamic:--ghc-option=-dynamic}
 
 # install
 %cabal_install %cabal copy --destdir=${RPM_BUILD_ROOT} -v
 
 # root dir for ghc docs
 %ghcdocbasedir %{_docdir}/ghc/html
-# ghcdocdir [pkgname]
-%ghcdocdir() %{ghcdocbasedir}/libraries/%{?1}%{!?1:%{pkg_name}}-%{version}
+# (deprecated) pkg doc dir
+%ghcdocdir %{ghcdocbasedir}/libraries/%{pkg_name}-%{version}
 # top library dir
 %ghcpkgbasedir %{_libdir}/ghc-%{ghc_version}
-# ghcpkgdir [pkgname]
-%ghcpkgdir() %{ghcpkgbasedir}/%{?1}%{!?1:%{pkg_name}}-%{version}
+# (deprecated) package dir
+%ghcpkgdir %{ghcpkgbasedir}/%{pkg_name}-%{version}
 
-# ghc_gen_filelists [pkgname]
-%ghc_gen_filelists() \
-pkgname=%{?1}%{!?1:%{pkg_name}} \
-basefile=ghc-${pkgname} \
-pkgnamever=${pkgname}-%{version} \
-rm -f ${basefile}.files ${basefile}-devel.files ${basefile}-prof.files \
+# ghc_gen_filelists [name-version]
+%ghc_gen_filelists()\
+pkgnamever=%{?1}%{!?1:%{pkg_name}-%{version}} \
+pkgname=%{?pkg_name}%{!?pkg_name:$(echo ${pkgnamever} | sed -e "s/\\(.*\\)-.*/\\1/")} \
+basepkg=ghc-${pkgname} \
+pkgdir=%{ghcpkgbasedir}/${pkgnamever} \
+docdir=%{ghcdocbasedir}/libraries/${pkgnamever} \
+rm -f ${basepkg}.files ${basepkg}-devel.files ${basepkg}-prof.files \
 %if 0%{!?without_shared:1} \
-echo "%defattr(-,root,root,-)" > ${basefile}.files \
-if [ -d "${RPM_BUILD_ROOT}%{ghcpkgdir}" ]; then \
-echo "%dir %{ghcpkgdir}" >> ${basefile}.files \
-echo "%attr(755,root,root) %{ghcpkgdir}/libHS${pkgnamever}-ghc%{ghc_version}.so" >> ${basefile}.files \
+echo "%defattr(-,root,root,-)" > ${basepkg}.files \
+if [ -d "${RPM_BUILD_ROOT}${pkgdir}" ]; then \
+echo "%dir ${pkgdir}" >> ${basepkg}.files \
+echo "%attr(755,root,root) ${pkgdir}/libHS${pkgnamever}-ghc%{ghc_version}.so" >> ${basepkg}.files \
 fi \
 %endif \
-echo "%defattr(-,root,root,-)" > ${basefile}-devel.files \
-if [ -d "${RPM_BUILD_ROOT}%{_docdir}/%{name}-%{version}" ]; then \
-  %{!?1:echo "%{_docdir}/%{name}-%{version}" >> ${basefile}%{?without_shared:-devel}.files} %{?1::} \
+echo "%defattr(-,root,root,-)" > ${basepkg}-devel.files \
+if [ -d "${RPM_BUILD_ROOT}%{_docdir}/ghc-${pkgnamever}" ]; then \
+echo "%{_docdir}/ghc-${pkgnamever}" >> ${basepkg}%{?without_shared:-devel}.files \
 fi \
-echo "%{ghcpkgbasedir}/package.conf.d/${pkgnamever}*.conf" >> ${basefile}-devel.files \
-if [ -d "${RPM_BUILD_ROOT}%{ghcpkgdir}" ]; then \
-find ${RPM_BUILD_ROOT}%{ghcpkgdir} -type d | sed "s/^/%dir /" >> ${basefile}-devel.files \
-find ${RPM_BUILD_ROOT}%{ghcpkgdir} ! \\( -type d -o -name "*_p.a" -o -name "*.p_hi" -o -name "libHS*.so" \\) >> ${basefile}-devel.files \
+echo "%{ghcpkgbasedir}/package.conf.d/${pkgnamever}*.conf" >> ${basepkg}-devel.files \
+if [ -d "${RPM_BUILD_ROOT}${pkgdir}" ]; then \
+find ${RPM_BUILD_ROOT}${pkgdir} -type d | sed "s/^/%dir /" >> ${basepkg}-devel.files \
+find ${RPM_BUILD_ROOT}${pkgdir} ! \\( -type d -o -name "*_p.a" -o -name "*.p_hi" -o -name "libHS*.so" \\) >> ${basepkg}-devel.files \
 fi \
-echo "%defattr(-,root,root,-)" > ${basefile}-prof.files \
-if [ -d "${RPM_BUILD_ROOT}%{ghcpkgdir}" ]; then \
-find ${RPM_BUILD_ROOT}%{ghcpkgdir} \\( -name "*_p.a" -o -name "*.p_hi" \\) >> ${basefile}-prof.files \
+echo "%defattr(-,root,root,-)" > ${basepkg}-prof.files \
+if [ -d "${RPM_BUILD_ROOT}${pkgdir}" ]; then \
+find ${RPM_BUILD_ROOT}${pkgdir} \\( -name "*_p.a" -o -name "*.p_hi" \\) >> ${basepkg}-prof.files \
 fi \
-if [ -d "${RPM_BUILD_ROOT}%{ghcdocdir}" ]; then \
-echo "%{ghcdocdir}" >> ${basefile}-devel.files \
+if [ -d "${RPM_BUILD_ROOT}${docdir}" ]; then \
+echo "${docdir}" >> ${basepkg}-devel.files \
 fi \
-sed -i -e "s!${RPM_BUILD_ROOT}!!g" %{!?without_shared:${basefile}.files} ${basefile}-devel.files ${basefile}-prof.files \
+sed -i -e "s!${RPM_BUILD_ROOT}!!g" %{!?without_shared:${basepkg}.files} ${basepkg}-devel.files ${basepkg}-prof.files \
 %{nil}
 
 # compiler version
 %ghc_version %{!?ghc_version_override:%(ghc --numeric-version)}%{?ghc_version_override}
 
 # create and install package.conf file
-# cabal_pkg_conf [pkgname]
-%cabal_pkg_conf \
+# cabal_pkg_conf [name-ver]
+%cabal_pkg_conf()\
+pkgnamever=%{?1}%{!?1:%{pkg_name}-%{version}} \
 %cabal register --gen-pkg-config \
 mkdir -p $RPM_BUILD_ROOT%{ghcpkgbasedir}/package.conf.d \
-install --mode=0644 %{?1}%{!?1:%{pkg_name}}-%{version}.conf $RPM_BUILD_ROOT%{ghcpkgbasedir}/package.conf.d
+install --mode=0644 ${pkgnamever}.conf $RPM_BUILD_ROOT%{ghcpkgbasedir}/package.conf.d \
+%{nil}
 
 # devel pkg basic requires
 %ghc_devel_requires Requires(post): ghc = %{ghc_version}\
@@ -88,7 +92,7 @@ Requires:       ghc-%{-n:%{-n*}}%{!-n:%{pkg_name}} = %{-v:%{-v*}}%{!-v:%{version
 %define local_pkg_name %{-n:%{-n*}}%{!-n:%{pkg_name}}\
 %define ghc_pkg_name ghc-%{local_pkg_name}\
 %package -n %{ghc_pkg_name}\
-Summary:        %{?common_summary}%{!?common_summary:%{local_pkg_name} library}\
+Summary:        %{?common_summary}%{!?common_summary:Haskell %{local_pkg_name} library}\
 Group:          System Environment/Libraries\
 %{-v:Version:        %{-v*}}\
 %{-l:License:        %{-l*}}\
@@ -179,23 +183,29 @@ find $RPM_BUILD_ROOT -type f -exec sh -c "file {} | grep -q 'dynamically linked'
 
 # ghc_bin_build
 %ghc_bin_build\
-%cabal_configure --ghc\
+%cabal_configure\
 %cabal build
 
-# ghc_lib_build
-%ghc_lib_build\
-%cabal_configure --ghc -p\
+# ghc_lib_build [name-version]
+%ghc_lib_build()\
+%{?1:cd %1}\
+%cabal_configure -p %{?1:--docdir=%{_docdir}/ghc-%1 --htmldir=%{ghcdocbasedir}/libraries/%1}\
 %cabal build\
-%cabal haddock %{!?without_hscolour:--hyperlink-source}
+%cabal haddock %{!?without_hscolour:--hyperlink-source}\
+%{?1:cd -}\
+%{nil}
 
-# ghc_bin_install
+# install bin package
 %ghc_bin_install\
 %cabal_install\
 %ghc_strip_dynlinked
 
-# ghc_lib_install
-%ghc_lib_install\
+# ghc_lib_install [name-version]
+%ghc_lib_install()\
+%{?1:cd %1}\
 %cabal_install\
 %cabal_pkg_conf\
+%{?1:cd -}\
 %ghc_gen_filelists\
-%ghc_strip_dynlinked
+%{!?1:%ghc_strip_dynlinked}\
+%{nil}
