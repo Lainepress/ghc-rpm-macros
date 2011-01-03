@@ -1,5 +1,5 @@
 Name:		ghc-rpm-macros
-Version:	0.11.0
+Version:	0.11.1
 Release:	1%{?dist}
 Summary:	Macros for building packages for GHC
 
@@ -47,6 +47,13 @@ install -p %{SOURCE3} ${RPM_BUILD_ROOT}/%{_prefix}/lib/rpm
 
 
 %changelog
+* Mon Jan  3 2011 Jens Petersen <petersen@redhat.com> - 0.11.1-1
+- use buildroot instead of RPM_BUILD_ROOT
+- rename ghcpkgbasedir to ghclibdir
+- split "[name-version]" args into "[name] [version]" args
+- move remaining name and version macro options (-n and -v) to args
+- drop deprecated -o options
+
 * Thu Dec 30 2010 Jens Petersen <petersen@redhat.com> - 0.11.0-1
 - add support for subpackaging ghc's libraries:
 - deprecate ghcpkgdir and ghcdocdir from now on
