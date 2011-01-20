@@ -10,7 +10,7 @@
 
 # root dir for ghc docs
 %ghcdocbasedir %{_docdir}/ghc/html
-# (deprecated) pkg doc dir
+# (deprecated) pkg doc dir - still used in cabal_configure
 %ghcdocdir %{ghcdocbasedir}/libraries/%{pkg_name}-%{version}
 # top library dir
 %ghclibdir %{_libdir}/ghc-%{ghc_version}
@@ -36,6 +36,9 @@ fi\
 echo "%defattr(-,root,root,-)" > %{basepkg}-devel.files\
 if [ -d "%{buildroot}%{_docdir}/ghc-%{pkgnamever}" ]; then\
 echo "%{_docdir}/ghc-%{pkgnamever}" >> %{basepkg}%{?without_shared:-devel}.files\
+fi\
+if [ -d "%{buildroot}%{_docdir}/%{pkgnamever}" ]; then\
+echo "%{_docdir}/%{pkgnamever}" >> %{basepkg}%{?without_shared:-devel}.files\
 fi\
 echo "%{ghclibdir}/package.conf.d/%{pkgnamever}*.conf" >> %{basepkg}-devel.files\
 if [ -d "%{buildroot}%{pkgdir}" ]; then\
@@ -93,12 +96,12 @@ Requires:       ghc-%{?pkg_name}%{!?pkg_name:%{pkgname}} = %{?pkgver}%{!?pkgver:
 %ghc_package_prof\
 %{nil}
 
-# ghc_binlib_package [-c cdepslist] [-h pkgdepslist] [-l licensetag] [name] [version]
-%ghc_binlib_package(c:h:l:)\
+# ghc_binlib_package [-c cdepslist] [-h pkgdepslist] [-l licensetag] [-x] [name] [version]
+%ghc_binlib_package(c:h:l:x)\
 %define pkgname %{?1}%{!?1:%{pkg_name}}\
 %define pkgver %{?2}%{!?2:%{version}}\
 %define pkgnamever %{pkgname}-%{pkgver}\
-%{?1:%global ghc_packages_list %{?ghc_packages_list} %{pkgnamever}}\
+%{!-x:%{?1:%global ghc_packages_list %{?ghc_packages_list} %{pkgnamever}}}\
 %define basepkg ghc-%{pkgname}\
 %package -n %{basepkg}\
 Summary:        %{?common_summary}%{!?common_summary:Haskell %{pkgname} library}\
@@ -109,7 +112,7 @@ Group:          System Environment/Libraries\
 %description -n %{basepkg}\
 %{?common_description}%{!?common_description:Haskell %{pkgname} library.}\
 \
-%if 0%{!?without_shared:1}\
+%if 0%{?ghc_version:%{!?without_shared:1}}\
 This package provides the shared library.\
 %endif\
 \

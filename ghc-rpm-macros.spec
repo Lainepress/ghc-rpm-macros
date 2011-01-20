@@ -1,5 +1,5 @@
 Name:		ghc-rpm-macros
-Version:	0.11.1
+Version:	0.11.2
 Release:	1%{?dist}
 Summary:	Macros for building packages for GHC
 
@@ -47,6 +47,11 @@ install -p %{SOURCE3} ${RPM_BUILD_ROOT}/%{_prefix}/lib/rpm
 
 
 %changelog
+* Thu Jan 20 2011 Jens Petersen <petersen@redhat.com> - 0.11.2-1
+- put docdir (license) also into shared lib subpackage
+- add ghc_binlib_package option to exclude package from ghc_packages_list
+- condition lib base package additional description for srpm
+
 * Mon Jan  3 2011 Jens Petersen <petersen@redhat.com> - 0.11.1-1
 - use buildroot instead of RPM_BUILD_ROOT
 - rename ghcpkgbasedir to ghclibdir
@@ -64,7 +69,7 @@ install -p %{SOURCE3} ${RPM_BUILD_ROOT}/%{_prefix}/lib/rpm
 * Mon Dec 20 2010 Jens Petersen <petersen@redhat.com> - 0.10.3-1
 - revert disabling debug_package, since with redhat-rpm-config installed
   the behaviour depended on the position of ghc_lib_package in the spec file
-  (reported by narasim_7)
+  (reported by narasim)
 
 * Fri Nov 26 2010 Jens Petersen <petersen@redhat.com>
 - drop with_devhelp since --html-help option gone from haddock-2.8.0
