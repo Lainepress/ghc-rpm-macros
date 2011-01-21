@@ -1,5 +1,5 @@
 # "cabal"
-%cabal %{_bindir}/runghc Setup
+%cabal ./Setup
 
 # configure
 %cabal_configure\
@@ -199,12 +199,14 @@ find $RPM_BUILD_ROOT -type f -exec sh -c "file {} | grep -q 'dynamically linked'
 
 # ghc_bin_build
 %ghc_bin_build\
+ghc --make -dynamic Setup\
 %cabal_configure\
 %cabal build
 
 # ghc_lib_build [name] [version]
 %ghc_lib_build()\
 %{?1:cd %1-%2}\
+ghc --make -dynamic Setup\
 %cabal_configure -p %{?1:--docdir=%{_docdir}/ghc-%1-%2 --htmldir=%{ghcdocbasedir}/libraries/%1-%2}\
 %cabal build\
 %cabal haddock %{!?without_hscolour:--hyperlink-source}\

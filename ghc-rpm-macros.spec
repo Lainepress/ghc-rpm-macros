@@ -1,5 +1,5 @@
 Name:		ghc-rpm-macros
-Version:	0.11.2
+Version:	0.11.3
 Release:	1%{?dist}
 Summary:	Macros for building packages for GHC
 
@@ -47,6 +47,9 @@ install -p %{SOURCE3} ${RPM_BUILD_ROOT}/%{_prefix}/lib/rpm
 
 
 %changelog
+* Fri Jan 21 2011 Jens Petersen <petersen@redhat.com> - 0.11.3-1
+- compile Setup to help speed up builds
+
 * Thu Jan 20 2011 Jens Petersen <petersen@redhat.com> - 0.11.2-1
 - put docdir (license) also into shared lib subpackage
 - add ghc_binlib_package option to exclude package from ghc_packages_list
