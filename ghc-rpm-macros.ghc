@@ -32,7 +32,7 @@ echo "%attr(755,root,root) %{pkgdir}/libHS%{pkgnamever}-ghc%{ghc_version}.so" >>
 fi\
 %endif\
 echo "%defattr(-,root,root,-)" > %{basepkg}-devel.files\
-for dir in %{_docdir}/{ghc-,}%{pkgnamever}
+for dir in %{_docdir}/{ghc-,}%{pkgnamever}; do\
 if [ -d "%{buildroot}${dir}" ]; then\
 echo "${dir}" >> %{basepkg}%{?without_shared:-devel}.files\
 fi\
