@@ -1,5 +1,5 @@
 Name:		ghc-rpm-macros
-Version:	0.11.3
+Version:	0.11.4
 Release:	1%{?dist}
 Summary:	Macros for building packages for GHC
 
@@ -47,6 +47,14 @@ install -p %{SOURCE3} ${RPM_BUILD_ROOT}/%{_prefix}/lib/rpm
 
 
 %changelog
+* Sat Jan 22 2011 Jens Petersen <petersen@redhat.com> - 0.11.4-1
+- drop deprecated ghcdocdir and ghcpkgdir
+- new ghclibdocdir
+- replace some missed RPM_BUILD_ROOT's
+- bring back ghc requires in ghc_devel_requires
+- improve prof summary and description
+- add without_prof and without_haddock option macros
+
 * Fri Jan 21 2011 Jens Petersen <petersen@redhat.com> - 0.11.3-1
 - compile Setup to help speed up builds
 

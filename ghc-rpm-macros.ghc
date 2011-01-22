@@ -3,19 +3,17 @@
 
 # configure
 %cabal_configure\
-%cabal configure --prefix=%{_prefix} --libdir=%{_libdir} --docdir=%{_docdir}/%{name}-%{version} --htmldir=%{ghcdocdir} --libsubdir='$compiler/$pkgid' --ghc %{!?without_shared:--enable-shared} %{?with_dynamic:--ghc-option=-dynamic}
+%cabal configure --prefix=%{_prefix} --libdir=%{_libdir} --docdir=%{_docdir}/%{name}-%{version} --htmldir=%{ghclibdocdir}/%{pkg_name}-%{version} --libsubdir='$compiler/$pkgid' --ghc %{!?without_shared:--enable-shared} %{!?without_dynamic:--enable-executable-dynamic}
 
 # install
 %cabal_install %cabal copy --destdir=%{buildroot} -v
 
 # root dir for ghc docs
 %ghcdocbasedir %{_docdir}/ghc/html
-# (deprecated) pkg doc dir - still used in cabal_configure
-%ghcdocdir %{ghcdocbasedir}/libraries/%{pkg_name}-%{version}
+# libraries doc dir
+%ghclibdocdir %{ghcdocbasedir}/libraries
 # top library dir
 %ghclibdir %{_libdir}/ghc-%{ghc_version}
-# (deprecated) package dir
-%ghcpkgdir %{ghclibdir}/%{pkg_name}-%{version}
 
 # ghc_gen_filelists [name] [version]
 %ghc_gen_filelists()\
@@ -24,7 +22,7 @@
 %define pkgnamever %{pkgname}-%{pkgver}\
 %define basepkg ghc-%{pkgname}\
 %define pkgdir %{ghclibdir}/%{pkgnamever}\
-%define docdir %{ghcdocbasedir}/libraries/%{pkgnamever}\
+%define docdir %{ghclibdocdir}/%{pkgnamever}\
 rm -f %{basepkg}.files %{basepkg}-devel.files %{basepkg}-prof.files\
 %if 0%{!?without_shared:1}\
 echo "%defattr(-,root,root,-)" > %{basepkg}.files\
@@ -34,12 +32,11 @@ echo "%attr(755,root,root) %{pkgdir}/libHS%{pkgnamever}-ghc%{ghc_version}.so" >>
 fi\
 %endif\
 echo "%defattr(-,root,root,-)" > %{basepkg}-devel.files\
-if [ -d "%{buildroot}%{_docdir}/ghc-%{pkgnamever}" ]; then\
-echo "%{_docdir}/ghc-%{pkgnamever}" >> %{basepkg}%{?without_shared:-devel}.files\
+for dir in %{_docdir}/{ghc-,}%{pkgnamever}
+if [ -d "%{buildroot}${dir}" ]; then\
+echo "${dir}" >> %{basepkg}%{?without_shared:-devel}.files\
 fi\
-if [ -d "%{buildroot}%{_docdir}/%{pkgnamever}" ]; then\
-echo "%{_docdir}/%{pkgnamever}" >> %{basepkg}%{?without_shared:-devel}.files\
-fi\
+done\
 echo "%{ghclibdir}/package.conf.d/%{pkgnamever}*.conf" >> %{basepkg}-devel.files\
 if [ -d "%{buildroot}%{pkgdir}" ]; then\
 find %{buildroot}%{pkgdir} -type d | sed "s/^/%dir /" >> %{basepkg}-devel.files\
@@ -65,12 +62,13 @@ sed -i -e "s!%{buildroot}!!g" %{!?without_shared:%{basepkg}.files} %{basepkg}-de
 %define pkgver %{?2}%{!?2:%{version}}\
 %define pkgnamever %{pkgname}-%{pkgver}\
 %cabal register --gen-pkg-config\
-mkdir -p $RPM_BUILD_ROOT%{ghclibdir}/package.conf.d\
-install --mode=0644 %{pkgnamever}.conf $RPM_BUILD_ROOT%{ghclibdir}/package.conf.d\
+mkdir -p %{buildroot}%{ghclibdir}/package.conf.d\
+install --mode=0644 %{pkgnamever}.conf %{buildroot}%{ghclibdir}/package.conf.d\
 %{nil}
 
 # devel pkg basic requires
-%ghc_devel_requires Requires(post): ghc = %{ghc_version}\
+%ghc_devel_requires Requires:       ghc = %{ghc_version}\
+ Requires(post): ghc = %{ghc_version}\
 Requires(postun): ghc = %{ghc_version}\
 %if 0%{!?without_shared:1}\
 Requires:       ghc-%{?pkg_name}%{!?pkg_name:%{pkgname}} = %{?pkgver}%{!?pkgver:%{version}}-%{release}\
@@ -185,7 +183,7 @@ Group:          Development/Libraries\
 %description -n %{basepkg}-prof\
 %{?common_description}%{!?common_description:Haskell %{pkgname} library.}\
 \
-This package contains the profiling library.\
+This package contains the profiling development files.\
 \
 %files -n %{basepkg}-prof -f %{basepkg}-prof.files\
 %defattr(-,root,root,-)\
@@ -194,7 +192,7 @@ This package contains the profiling library.\
 # ghc_strip_dynlinked
 %ghc_strip_dynlinked\
 %if 0%{!?__debug_package:1}\
-find $RPM_BUILD_ROOT -type f -exec sh -c "file {} | grep -q 'dynamically linked'" \\; -exec strip "{}" \\;\
+find %{buildroot} -type f -exec sh -c "file {} | grep -q 'dynamically linked'" \\; -exec strip "{}" \\;\
 %endif
 
 # ghc_bin_build
@@ -207,9 +205,9 @@ ghc --make -dynamic Setup\
 %ghc_lib_build()\
 %{?1:cd %1-%2}\
 ghc --make -dynamic Setup\
-%cabal_configure -p %{?1:--docdir=%{_docdir}/ghc-%1-%2 --htmldir=%{ghcdocbasedir}/libraries/%1-%2}\
+%cabal_configure %{!?without_prof:-p} %{?1:--docdir=%{_docdir}/ghc-%1-%2 --htmldir=%{ghclibdocdir}/%1-%2}\
 %cabal build\
-%cabal haddock %{!?without_hscolour:--hyperlink-source}\
+%{!?without_haddock:%cabal haddock %{!?without_hscolour:--hyperlink-source}}\
 %{?1:cd -}\
 %{nil}
 
