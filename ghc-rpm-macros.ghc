@@ -68,7 +68,7 @@ install --mode=0644 %{pkgnamever}.conf %{buildroot}%{ghclibdir}/package.conf.d\
 
 # devel pkg basic requires
 %ghc_devel_requires Requires:       ghc = %{ghc_version}\
- Requires(post): ghc = %{ghc_version}\
+Requires(post): ghc = %{ghc_version}\
 Requires(postun): ghc = %{ghc_version}\
 %if 0%{!?without_shared:1}\
 Requires:       ghc-%{?pkg_name}%{!?pkg_name:%{pkgname}} = %{?pkgver}%{!?pkgver:%{version}}-%{release}\
