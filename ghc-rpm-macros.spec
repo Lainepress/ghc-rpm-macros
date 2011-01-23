@@ -1,5 +1,5 @@
 Name:		ghc-rpm-macros
-Version:	0.11.4
+Version:	0.11.5
 Release:	1%{?dist}
 Summary:	Macros for building packages for GHC
 
@@ -47,6 +47,11 @@ install -p %{SOURCE3} ${RPM_BUILD_ROOT}/%{_prefix}/lib/rpm
 
 
 %changelog
+* Sun Jan 23 2011 Jens Petersen <petersen@redhat.com> - 0.11.5-1
+- add rpm hash requires for dynamic executables in ghc-deps.sh
+- compile Setup in cabal macro
+- use _rpmconfigdir
+
 * Sat Jan 22 2011 Jens Petersen <petersen@redhat.com> - 0.11.4-1
 - drop deprecated ghcdocdir and ghcpkgdir
 - new ghclibdocdir

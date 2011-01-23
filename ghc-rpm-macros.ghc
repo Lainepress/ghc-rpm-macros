@@ -1,5 +1,6 @@
 # "cabal"
-%cabal ./Setup
+%cabal [ -x Setup ] || ghc --make -dynamic Setup\
+./Setup
 
 # configure
 %cabal_configure\
@@ -130,8 +131,8 @@ This package provides the shared library.\
 %define pkgnamever %{pkgname}-%{pkgver}\
 %define basepkg ghc-%{pkgname}\
 %global _use_internal_dependency_generator 0\
-%global __find_provides /usr/lib/rpm/ghc-deps.sh --provides %{buildroot}%{ghclibdir}\
-%global __find_requires /usr/lib/rpm/ghc-deps.sh --requires %{buildroot}%{ghclibdir}\
+%global __find_provides %{_rpmconfigdir}/ghc-deps.sh --provides %{buildroot}%{ghclibdir}\
+%global __find_requires %{_rpmconfigdir}/ghc-deps.sh --requires %{buildroot}%{ghclibdir}\
 %package -n %{basepkg}-devel\
 Summary:        %{?common_summary}%{!?common_summary:Haskell %{pkgname} library} development files\
 Group:          Development/Libraries\
@@ -197,14 +198,12 @@ find %{buildroot} -type f -exec sh -c "file {} | grep -q 'dynamically linked'" \
 
 # ghc_bin_build
 %ghc_bin_build\
-ghc --make -dynamic Setup\
 %cabal_configure\
 %cabal build
 
 # ghc_lib_build [name] [version]
 %ghc_lib_build()\
 %{?1:cd %1-%2}\
-ghc --make -dynamic Setup\
 %cabal_configure %{!?without_prof:-p} %{?1:--docdir=%{_docdir}/ghc-%1-%2 --htmldir=%{ghclibdocdir}/%1-%2}\
 %cabal build\
 %{!?without_haddock:%cabal haddock %{!?without_hscolour:--hyperlink-source}}\
@@ -213,6 +212,8 @@ ghc --make -dynamic Setup\
 
 # install bin package
 %ghc_bin_install\
+%global _use_internal_dependency_generator 0\
+%global __find_requires %{_rpmconfigdir}/ghc-deps.sh --requires %{buildroot}%{ghclibdir}\
 %cabal_install\
 %ghc_strip_dynlinked
 

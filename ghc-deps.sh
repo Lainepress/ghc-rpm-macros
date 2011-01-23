@@ -18,14 +18,18 @@ case $MODE in
     *) echo "`basename $0`: Need --provides or --requires" ; exit 1
 esac
 
+GHCVERSION=$(ghc --numeric-version)
+
 files=$(cat)
 
 #set -x
 
-if [ -d "$PKGCONFDIR" ]; then
- for i in $files; do
-  LIB_FILE=$(echo $i | grep /libHS | egrep -v "$PKGBASEDIR/libHS")
-  if [ -n "$LIB_FILE" ]; then
+for i in $files; do
+ LIB_FILE=$(echo $i | grep /libHS | egrep -v "$PKGBASEDIR/libHS")
+ if [ -n "$LIB_FILE" ]; then
+  if [ -d "$PKGCONFDIR" ]; then
+    META=""
+    SELF=""
     case $LIB_FILE in
       *.so) META=ghc ;;
       *_p.a) META=ghc-prof SELF=ghc-devel ;;
@@ -48,7 +52,15 @@ if [ -d "$PKGCONFDIR" ]; then
       fi
     fi
   fi
- done
-fi
+ elif [ "$MODE" = "--requires" ]; then
+   if file $i | grep -q 'executable, .* dynamically linked'; then
+     BIN_DEPS=$(ldd $i | grep libHS | grep -v libHSrts | sed -e "s%^\\tlibHS\(.*\)-ghc${GHCVERSION}.so =.*%\1%")
+     for p in ${BIN_DEPS}; do
+	 HASH=$(ghc-pkg --global field $p id | sed -e "s/^id: \+//")
+	 echo $HASH | sed -e "s/\(.*\)-\(.*\)/ghc(\1) = \2/"
+     done
+   fi
+ fi
+done
 
 echo $files | tr [:blank:] '\n' | /usr/lib/rpm/rpmdeps $MODE
