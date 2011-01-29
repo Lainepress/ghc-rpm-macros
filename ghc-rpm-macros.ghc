@@ -33,11 +33,11 @@ echo "%attr(755,root,root) %{pkgdir}/libHS%{pkgnamever}-ghc%{ghc_version}.so" >>
 fi\
 %endif\
 echo "%defattr(-,root,root,-)" > %{basepkg}-devel.files\
-for dir in %{_docdir}/{ghc-,}%{pkgnamever}; do\
-if [ -d "%{buildroot}${dir}" ]; then\
-echo "${dir}" >> %{basepkg}%{?without_shared:-devel}.files\
+%if 0%{!?1:1}\
+if [ -d "%{buildroot}%{_docdir}/%{name}-%{version}" ]; then\
+  echo "%{_docdir}/%{name}-%{version}" >> %{basepkg}%{?without_shared:-devel}.files\
 fi\
-done\
+%endif\
 echo "%{ghclibdir}/package.conf.d/%{pkgnamever}*.conf" >> %{basepkg}-devel.files\
 if [ -d "%{buildroot}%{pkgdir}" ]; then\
 find %{buildroot}%{pkgdir} -type d | sed "s/^/%dir /" >> %{basepkg}-devel.files\

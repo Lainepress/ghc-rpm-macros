@@ -1,5 +1,5 @@
 Name:		ghc-rpm-macros
-Version:	0.11.5
+Version:	0.11.6
 Release:	1%{?dist}
 Summary:	Macros for building packages for GHC
 
@@ -43,10 +43,14 @@ install -p %{SOURCE3} ${RPM_BUILD_ROOT}/%{_prefix}/lib/rpm
 %defattr(-,root,root,-)
 %doc COPYING AUTHORS
 %config(noreplace) %{_sysconfdir}/rpm/macros.ghc
-%{_prefix}/lib/rpm
+%{_prefix}/lib/rpm/ghc-deps.sh
 
 
 %changelog
+* Sat Jan 29 2011 Jens Petersen <petersen@redhat.com> - 0.11.6-1
+- simplify adding shared subpackage license file
+- own ghc-deps.sh not /usr/lib/rpm
+
 * Sun Jan 23 2011 Jens Petersen <petersen@redhat.com> - 0.11.5-1
 - add rpm hash requires for dynamic executables in ghc-deps.sh
 - compile Setup in cabal macro
