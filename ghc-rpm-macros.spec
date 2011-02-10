@@ -1,5 +1,5 @@
 Name:		ghc-rpm-macros
-Version:	0.11.7
+Version:	0.11.8
 Release:	1%{?dist}
 Summary:	Macros for building packages for GHC
 
@@ -47,6 +47,12 @@ install -p %{SOURCE3} ${RPM_BUILD_ROOT}/%{_prefix}/lib/rpm
 
 
 %changelog
+* Thu Feb 10 2011 Jens Petersen <petersen@redhat.com> - 0.11.8-1
+- only link Setup dynamically if without_shared and without_dynamic not set
+- add cabal_configure_options to pass extra options to cabal_configure
+- set without_shared and without_dynamic by default on secondary archs
+  in cabal_bin_build and cabal_lib_build
+
 * Thu Feb 10 2011 Jens Petersen <petersen@redhat.com> - 0.11.7-1
 - fix ghc-deps.sh for without_shared libraries
 

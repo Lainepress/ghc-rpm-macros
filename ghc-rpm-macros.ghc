@@ -2,12 +2,12 @@
 # see https://fedoraproject.org/wiki/PackagingDrafts/Haskell for more details
 
 # "cabal"
-%cabal [ -x Setup ] || ghc --make -dynamic Setup\
+%cabal [ -x Setup ] || ghc --make %{!?without_shared:%{!?without_dynamic:-dynamic}} Setup\
 ./Setup
 
 # configure
 %cabal_configure\
-%cabal configure --prefix=%{_prefix} --libdir=%{_libdir} --docdir=%{_docdir}/%{name}-%{version} --htmldir=%{ghclibdocdir}/%{pkg_name}-%{version} --libsubdir='$compiler/$pkgid' --ghc %{!?without_shared:--enable-shared} %{!?without_dynamic:--enable-executable-dynamic}
+%cabal configure --prefix=%{_prefix} --libdir=%{_libdir} --docdir=%{_docdir}/%{name}-%{version} --htmldir=%{ghclibdocdir}/%{pkg_name}-%{version} --libsubdir='$compiler/$pkgid' --ghc %{!?without_shared:--enable-shared} %{!?without_dynamic:--enable-executable-dynamic} %{?cabal_configure_options}
 
 # install
 %cabal_install %cabal copy --destdir=%{buildroot} -v
@@ -201,12 +201,20 @@ find %{buildroot} -type f -exec sh -c "file {} | grep -q 'dynamically linked'" \
 
 # ghc_bin_build
 %ghc_bin_build\
+%ifnarch %{ix86} x86_64\
+%global without_dynamic 1\
+%global without_shared 1\
+%endif\
 %cabal_configure\
 %cabal build
 
 # ghc_lib_build [name] [version]
 %ghc_lib_build()\
 %{?1:cd %1-%2}\
+%ifnarch %{ix86} x86_64\
+%global without_dynamic 1\
+%global without_shared 1\
+%endif\
 %cabal_configure %{!?without_prof:-p} %{?1:--docdir=%{_docdir}/ghc-%1-%2 --htmldir=%{ghclibdocdir}/%1-%2}\
 %cabal build\
 %{!?without_haddock:%cabal haddock %{!?without_hscolour:--hyperlink-source}}\
