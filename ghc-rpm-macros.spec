@@ -1,6 +1,6 @@
 Name:		ghc-rpm-macros
-Version:	0.11.6
-Release:	2%{?dist}
+Version:	0.11.7
+Release:	1%{?dist}
 Summary:	Macros for building packages for GHC
 
 Group:		Development/Libraries
@@ -47,6 +47,9 @@ install -p %{SOURCE3} ${RPM_BUILD_ROOT}/%{_prefix}/lib/rpm
 
 
 %changelog
+* Thu Feb 10 2011 Jens Petersen <petersen@redhat.com> - 0.11.7-1
+- fix ghc-deps.sh for without_shared libraries
+
 * Tue Feb 08 2011 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 0.11.6-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_15_Mass_Rebuild
 

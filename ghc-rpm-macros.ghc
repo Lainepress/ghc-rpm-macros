@@ -1,3 +1,6 @@
+# RPM Macros for packaging Haskell cabalized packages
+# see https://fedoraproject.org/wiki/PackagingDrafts/Haskell for more details
+
 # "cabal"
 %cabal [ -x Setup ] || ghc --make -dynamic Setup\
 ./Setup
