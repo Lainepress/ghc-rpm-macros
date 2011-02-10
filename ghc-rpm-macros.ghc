@@ -201,20 +201,12 @@ find %{buildroot} -type f -exec sh -c "file {} | grep -q 'dynamically linked'" \
 
 # ghc_bin_build
 %ghc_bin_build\
-%ifnarch %{ix86} x86_64\
-%global without_dynamic 1\
-%global without_shared 1\
-%endif\
 %cabal_configure\
 %cabal build
 
 # ghc_lib_build [name] [version]
 %ghc_lib_build()\
 %{?1:cd %1-%2}\
-%ifnarch %{ix86} x86_64\
-%global without_dynamic 1\
-%global without_shared 1\
-%endif\
 %cabal_configure %{!?without_prof:-p} %{?1:--docdir=%{_docdir}/ghc-%1-%2 --htmldir=%{ghclibdocdir}/%1-%2}\
 %cabal build\
 %{!?without_haddock:%cabal haddock %{!?without_hscolour:--hyperlink-source}}\
