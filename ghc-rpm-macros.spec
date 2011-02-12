@@ -43,9 +43,9 @@ install -p %{SOURCE3} ${RPM_BUILD_ROOT}/%{_prefix}/lib/rpm
 %ifnarch %{ix86} x86_64
 cat >> ${RPM_BUILD_ROOT}/%{_sysconfdir}/rpm/macros.ghc <<EOF
 
-# shared libraries are only supported on main intel archs
-%%global ghc_without_dynamic 1
-%%global ghc_without_shared 1
+# shared libraries are only supported on primary intel archs
+%%ghc_without_dynamic 1
+%%ghc_without_shared 1
 EOF
 %endif
 
