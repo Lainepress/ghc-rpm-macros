@@ -1,5 +1,7 @@
+%global debug_package %{nil}
+
 Name:		ghc-rpm-macros
-Version:	0.11.9
+Version:	0.11.10
 Release:	1%{?dist}
 Summary:	Macros for building packages for GHC
 
@@ -14,8 +16,6 @@ Source0:	ghc-rpm-macros.ghc
 Source1:	COPYING
 Source2:	AUTHORS
 Source3:	ghc-deps.sh
-
-BuildArch:	noarch
 
 %description
 A set of macros for building GHC packages following the Haskell Guidelines
@@ -38,6 +38,17 @@ install -p -m 0644 %{SOURCE0} ${RPM_BUILD_ROOT}/%{_sysconfdir}/rpm/macros.ghc
 mkdir -p ${RPM_BUILD_ROOT}/%{_prefix}/lib/rpm
 install -p %{SOURCE3} ${RPM_BUILD_ROOT}/%{_prefix}/lib/rpm
 
+# this is why this package is now arch-dependent:
+# turn off shared libs and dynamic linking on secondary archs
+%ifnarch %{ix86} x86_64
+cat >> ${RPM_BUILD_ROOT}/%{_prefix}%{_sysconfdir}/rpm/macros.ghc <<EOF
+
+# shared libraries are only supported on main intel archs
+%%global ghc_without_dynamic 1
+%%global ghc_without_shared 1
+EOF
+%endif
+
 
 %files
 %defattr(-,root,root,-)
@@ -47,6 +58,17 @@ install -p %{SOURCE3} ${RPM_BUILD_ROOT}/%{_prefix}/lib/rpm
 
 
 %changelog
+* Sun Feb 13 2011 Jens Petersen <petersen@redhat.com> - 0.11.10-1
+- this package is now arch-dependent
+- rename without_shared to ghc_without_shared and without_dynamic
+  to ghc_without_dynamic so that they can be globally defined for
+  secondary archs without shared libs
+- use %%undefined macro
+- disable debug_package in ghc_bin_build and ghc_lib_build
+- set ghc_without_shared and ghc_without_dynamic on secondary
+  (ie non main intel archs)
+- disable debuginfo for self
+
 * Fri Feb 11 2011 Jens Petersen <petersen@redhat.com> - 0.11.9-1
 - revert "set without_shared and without_dynamic by default on secondary archs
   in cabal_bin_build and cabal_lib_build" change, since happening for all archs

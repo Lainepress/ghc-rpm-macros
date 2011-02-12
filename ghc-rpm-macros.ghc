@@ -1,13 +1,13 @@
-# RPM Macros for packaging Haskell cabalized packages
+# RPM Macros for packaging Haskell cabalized packages  -*-rpm-spec-*-
 # see https://fedoraproject.org/wiki/PackagingDrafts/Haskell for more details
 
 # "cabal"
-%cabal [ -x Setup ] || ghc --make %{!?without_shared:%{!?without_dynamic:-dynamic}} Setup\
+%cabal [ -x Setup ] || ghc --make %{!?ghc_without_shared:%{!?ghc_without_dynamic:-dynamic}} Setup\
 ./Setup
 
 # configure
 %cabal_configure\
-%cabal configure --prefix=%{_prefix} --libdir=%{_libdir} --docdir=%{_docdir}/%{name}-%{version} --htmldir=%{ghclibdocdir}/%{pkg_name}-%{version} --libsubdir='$compiler/$pkgid' --ghc %{!?without_shared:--enable-shared} %{!?without_dynamic:--enable-executable-dynamic} %{?cabal_configure_options}
+%cabal configure --prefix=%{_prefix} --libdir=%{_libdir} --docdir=%{_docdir}/%{name}-%{version} --htmldir=%{ghclibdocdir}/%{pkg_name}-%{version} --libsubdir='$compiler/$pkgid' --ghc %{!?ghc_without_shared:--enable-shared} %{!?ghc_without_dynamic:--enable-executable-dynamic} %{?cabal_configure_options}
 
 # install
 %cabal_install %cabal copy --destdir=%{buildroot} -v
@@ -28,7 +28,7 @@
 %define pkgdir %{ghclibdir}/%{pkgnamever}\
 %define docdir %{ghclibdocdir}/%{pkgnamever}\
 rm -f %{basepkg}.files %{basepkg}-devel.files %{basepkg}-prof.files\
-%if 0%{!?without_shared:1}\
+%if %{undefined ghc_without_shared}\
 echo "%defattr(-,root,root,-)" > %{basepkg}.files\
 if [ -d "%{buildroot}%{pkgdir}" ]; then\
 echo "%dir %{pkgdir}" >> %{basepkg}.files\
@@ -38,7 +38,7 @@ fi\
 echo "%defattr(-,root,root,-)" > %{basepkg}-devel.files\
 %if 0%{!?1:1}\
 if [ -d "%{buildroot}%{_docdir}/%{name}-%{version}" ]; then\
-  echo "%{_docdir}/%{name}-%{version}" >> %{basepkg}%{?without_shared:-devel}.files\
+  echo "%{_docdir}/%{name}-%{version}" >> %{basepkg}%{?ghc_without_shared:-devel}.files\
 fi\
 %endif\
 echo "%{ghclibdir}/package.conf.d/%{pkgnamever}*.conf" >> %{basepkg}-devel.files\
@@ -53,7 +53,7 @@ fi\
 if [ -d "%{buildroot}%{docdir}" ]; then\
 echo "%{docdir}" >> %{basepkg}-devel.files\
 fi\
-sed -i -e "s!%{buildroot}!!g" %{!?without_shared:%{basepkg}.files} %{basepkg}-devel.files %{basepkg}-prof.files\
+sed -i -e "s!%{buildroot}!!g" %{!?ghc_without_shared:%{basepkg}.files} %{basepkg}-devel.files %{basepkg}-prof.files\
 %{nil}
 
 # compiler version
@@ -74,7 +74,7 @@ install --mode=0644 %{pkgnamever}.conf %{buildroot}%{ghclibdir}/package.conf.d\
 %ghc_devel_requires Requires:       ghc = %{ghc_version}\
 Requires(post): ghc = %{ghc_version}\
 Requires(postun): ghc = %{ghc_version}\
-%if 0%{!?without_shared:1}\
+%if %{undefined ghc_without_shared}\
 Requires:       ghc-%{?pkg_name}%{!?pkg_name:%{pkgname}} = %{?pkgver}%{!?pkgver:%{version}}-%{release}\
 %endif
 
@@ -88,7 +88,7 @@ Requires:       ghc-%{?pkg_name}%{!?pkg_name:%{pkgname}} = %{?pkgver}%{!?pkgver:
 %define pkgver %{?2}%{!?2:%{version}}\
 %define pkgnamever %{pkgname}-%{pkgver}\
 %define basepkg ghc-%{pkgname}\
-%if 0%{!?without_shared:1}\
+%if %{undefined ghc_without_shared}\
 %files -n %{basepkg} -f %{basepkg}.files\
 %defattr(-,root,root,-)\
 %endif\
@@ -113,8 +113,7 @@ Group:          System Environment/Libraries\
 \
 %description -n %{basepkg}\
 %{?common_description}%{!?common_description:Haskell %{pkgname} library.}\
-\
-%if 0%{?ghc_version:%{!?without_shared:1}}\
+%if %{defined ghc_version} && %{undefined ghc_without_shared}\
 This package provides the shared library.\
 %endif\
 \
@@ -195,17 +194,19 @@ This package contains the profiling development files.\
 
 # ghc_strip_dynlinked
 %ghc_strip_dynlinked\
-%if 0%{!?__debug_package:1}\
+%if %{undefined __debug_package}\
 find %{buildroot} -type f -exec sh -c "file {} | grep -q 'dynamically linked'" \\; -exec strip "{}" \\;\
 %endif
 
 # ghc_bin_build
 %ghc_bin_build\
+%global debug_package %{nil}\
 %cabal_configure\
 %cabal build
 
 # ghc_lib_build [name] [version]
 %ghc_lib_build()\
+%global debug_package %{nil}\
 %{?1:cd %1-%2}\
 %cabal_configure %{!?without_prof:-p} %{?1:--docdir=%{_docdir}/ghc-%1-%2 --htmldir=%{ghclibdocdir}/%1-%2}\
 %cabal build\
