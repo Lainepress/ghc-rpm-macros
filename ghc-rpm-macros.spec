@@ -1,7 +1,7 @@
 %global debug_package %{nil}
 
 Name:		ghc-rpm-macros
-Version:	0.11.10
+Version:	0.11.10.1
 Release:	1%{?dist}
 Summary:	Macros for building packages for GHC
 
@@ -41,7 +41,7 @@ install -p %{SOURCE3} ${RPM_BUILD_ROOT}/%{_prefix}/lib/rpm
 # this is why this package is now arch-dependent:
 # turn off shared libs and dynamic linking on secondary archs
 %ifnarch %{ix86} x86_64
-cat >> ${RPM_BUILD_ROOT}/%{_prefix}%{_sysconfdir}/rpm/macros.ghc <<EOF
+cat >> ${RPM_BUILD_ROOT}/%{_sysconfdir}/rpm/macros.ghc <<EOF
 
 # shared libraries are only supported on main intel archs
 %%global ghc_without_dynamic 1
