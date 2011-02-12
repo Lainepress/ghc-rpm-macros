@@ -1,7 +1,7 @@
 %global debug_package %{nil}
 
 Name:		ghc-rpm-macros
-Version:	0.11.10.1
+Version:	0.11.10.2
 Release:	1%{?dist}
 Summary:	Macros for building packages for GHC
 
