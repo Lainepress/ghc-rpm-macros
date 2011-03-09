@@ -41,6 +41,11 @@ if [ -d "%{buildroot}%{_docdir}/%{name}-%{version}" ]; then\
   echo "%{_docdir}/%{name}-%{version}" >> %{basepkg}%{?ghc_without_shared:-devel}.files\
 fi\
 %endif\
+%if 0%{?1:1}\
+if [ -d "%{buildroot}%{_docdir}/ghc-%{pkgnamever}" ]; then\
+  echo "%{_docdir}/ghc-%{pkgnamever}" >> %{basepkg}%{?ghc_without_shared:-devel}.files\
+fi\
+%endif\
 echo "%{ghclibdir}/package.conf.d/%{pkgnamever}*.conf" >> %{basepkg}-devel.files\
 if [ -d "%{buildroot}%{pkgdir}" ]; then\
 find %{buildroot}%{pkgdir} -type d | sed "s/^/%dir /" >> %{basepkg}-devel.files\

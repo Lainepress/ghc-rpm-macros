@@ -1,7 +1,7 @@
 %global debug_package %{nil}
 
 Name:		ghc-rpm-macros
-Version:	0.11.10.2
+Version:	0.11.11
 Release:	1%{?dist}
 Summary:	Macros for building packages for GHC
 
@@ -58,6 +58,9 @@ EOF
 
 
 %changelog
+* Wed Mar  9 2011 Jens Petersen <petersen@redhat.com> - 0.11.11-1
+- add docdir when subpackaging packages too
+
 * Sun Feb 13 2011 Jens Petersen <petersen@redhat.com> - 0.11.10-1
 - this package is now arch-dependent
 - rename without_shared to ghc_without_shared and without_dynamic
