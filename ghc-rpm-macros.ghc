@@ -115,6 +115,7 @@ Summary:        %{?common_summary}%{!?common_summary:Haskell %{pkgname} library}
 Group:          System Environment/Libraries\
 %{?1:Version:        %{pkgver}}\
 %{-l:License:        %{-l*}}\
+%{?ghc_pkg_obsoletes:Obsoletes:      %(echo "%{ghc_pkg_obsoletes}" | sed -e "s/\\(ghc-[^, ]*\\)-devel/\\1/g")}\
 \
 %description -n %{basepkg}\
 %{?common_description}%{!?common_description:Haskell %{pkgname} library.}\

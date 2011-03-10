@@ -1,7 +1,7 @@
 %global debug_package %{nil}
 
 Name:		ghc-rpm-macros
-Version:	0.11.11
+Version:	0.11.12
 Release:	1%{?dist}
 Summary:	Macros for building packages for GHC
 
@@ -58,6 +58,9 @@ EOF
 
 
 %changelog
+* Thu Mar 10 2011 Jens Petersen <petersen@redhat.com> - 0.11.12-1
+- add ghc_pkg_obsoletes to binlib base lib package too
+
 * Wed Mar  9 2011 Jens Petersen <petersen@redhat.com> - 0.11.11-1
 - add docdir when subpackaging packages too
 
