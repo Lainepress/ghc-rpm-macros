@@ -7,6 +7,15 @@
 
 # configure
 %cabal_configure\
+%if %{undefined ghc_bootstrap}\
+if ! ghc --info | grep -q "(\"Booter version\",\"%{ghc_version}\")"; then\
+  echo "Aborting since this ghc build is not ABI self-bootstrapped.\
+The ghc package should be rebuilt against its current version first\
+to prevent avoid any potential future dependency breakage.\
+(This can be overridden by defining ghc_bootstrap at your own risk.)"\
+  exit 1\
+fi\
+%endif\
 %cabal configure --prefix=%{_prefix} --libdir=%{_libdir} --docdir=%{_docdir}/%{name}-%{version} --htmldir=%{ghclibdocdir}/%{pkg_name}-%{version} --libsubdir='$compiler/$pkgid' --ghc %{!?ghc_without_shared:--enable-shared} %{!?ghc_without_dynamic:--enable-executable-dynamic} %{?cabal_configure_options}
 
 # install
@@ -128,9 +137,8 @@ This package provides the shared library.\
 
 %ghc_pkg_recache %{_bindir}/ghc-pkg recache --no-user-package-conf || :
 
-# for docs post and postun
-%ghc_reindex_haddock\
-%{nil}
+# (deprecated) for docs post and postun
+%ghc_reindex_haddock :
 
 # ghc_package_devel [-c cdepslist] [-h pkgdepslist] [-l licensetag] [name] [version]
 %ghc_package_devel(c:h:l:)\
@@ -154,7 +162,6 @@ Group:          Development/Libraries\
 %{?ghc_pkg_obsoletes:Obsoletes:      %{ghc_pkg_obsoletes}}\
 %{?ghc_pkg_obsoletes:Obsoletes:      %(echo "%{ghc_pkg_obsoletes}" | sed -e "s/\\(ghc-[^, ]*\\)-devel/\\1-doc/g")}\
 Obsoletes:      %{basepkg}-doc < %{version}-%{release}\
-Provides:       %{basepkg}-doc = %{version}-%{release}\
 \
 %description -n %{basepkg}-devel\
 %{?common_description}%{!?common_description:Haskell %{pkgname} library.}\
@@ -163,11 +170,9 @@ This package contains the development files.\
 \
 %post -n %{basepkg}-devel\
 %ghc_pkg_recache\
-%ghc_reindex_haddock\
 \
 %postun -n %{basepkg}-devel\
 %ghc_pkg_recache\
-%ghc_reindex_haddock\
 \
 %files -n %{basepkg}-devel -f %{basepkg}-devel.files\
 %defattr(-,root,root,-)\

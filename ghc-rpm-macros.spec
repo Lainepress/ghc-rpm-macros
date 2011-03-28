@@ -1,7 +1,7 @@
 %global debug_package %{nil}
 
 Name:		ghc-rpm-macros
-Version:	0.11.12
+Version:	0.11.13
 Release:	1%{?dist}
 Summary:	Macros for building packages for GHC
 
@@ -58,6 +58,13 @@ EOF
 
 
 %changelog
+* Mon Mar 28 2011 Jens Petersen <petersen@redhat.com> - 0.11.13-1
+- ghc-deps.sh: check PKGBASEDIR exists to avoid warning for bin package
+- abort cabal_configure if ghc is not self-bootstrapped
+- make ghc_reindex_haddock a safe : no-op
+- no longer provide ghc-*-doc
+- no longer run ghc_reindex_haddock in ghc-*-devel scripts
+
 * Thu Mar 10 2011 Jens Petersen <petersen@redhat.com> - 0.11.12-1
 - add ghc_pkg_obsoletes to binlib base lib package too
 
@@ -72,7 +79,7 @@ EOF
 - use %%undefined macro
 - disable debug_package in ghc_bin_build and ghc_lib_build
 - set ghc_without_shared and ghc_without_dynamic on secondary
-  (ie non main intel archs)
+  (ie non main intel) archs
 - disable debuginfo for self
 
 * Fri Feb 11 2011 Jens Petersen <petersen@redhat.com> - 0.11.9-1

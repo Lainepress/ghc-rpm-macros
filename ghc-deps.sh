@@ -18,7 +18,9 @@ case $MODE in
     *) echo "`basename $0`: Need --provides or --requires" ; exit 1
 esac
 
-SHARED=$(find $PKGBASEDIR -type f -name '*.so')
+if [ -d "$PKGBASEDIR" ]; then
+  SHARED=$(find $PKGBASEDIR -type f -name '*.so')
+fi
 
 GHCVERSION=$(ghc --numeric-version)
 
