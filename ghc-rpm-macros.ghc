@@ -8,11 +8,11 @@
 # configure
 %cabal_configure\
 %if %{undefined ghc_bootstrap}\
-if ! ghc --info | grep -q "(\"Booter version\",\"%{ghc_version}\")"; then\
-  echo "Aborting since this ghc build is not ABI self-bootstrapped.\
+if [ ! "$(ghc --info | grep \\"Booter\\ version\\",\\"%{ghc_version}\\")" ]; then\
+  echo "Aborting since this ghc version build is not self-bootstrapped.\
 The ghc package should be rebuilt against its current version first\
-to prevent avoid any potential future dependency breakage.\
-(This can be overridden by defining ghc_bootstrap at your own risk.)"\
+to prevent dependency ABI breakage with a future ghc rebuild.\
+(This can be overridden at your own risk by defining ghc_bootstrap.)"\
   exit 1\
 fi\
 %endif\
