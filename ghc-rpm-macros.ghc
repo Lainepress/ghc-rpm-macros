@@ -162,6 +162,7 @@ Group:          Development/Libraries\
 %{?ghc_pkg_obsoletes:Obsoletes:      %{ghc_pkg_obsoletes}}\
 %{?ghc_pkg_obsoletes:Obsoletes:      %(echo "%{ghc_pkg_obsoletes}" | sed -e "s/\\(ghc-[^, ]*\\)-devel/\\1-doc/g")}\
 Obsoletes:      %{basepkg}-doc < %{version}-%{release}\
+Provides:       %{basepkg}-doc = %{version}-%{release}\
 \
 %description -n %{basepkg}-devel\
 %{?common_description}%{!?common_description:Haskell %{pkgname} library.}\

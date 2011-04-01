@@ -1,7 +1,7 @@
 %global debug_package %{nil}
 
 Name:		ghc-rpm-macros
-Version:	0.11.13
+Version:	0.11.14
 Release:	1%{?dist}
 Summary:	Macros for building packages for GHC
 
@@ -58,10 +58,13 @@ EOF
 
 
 %changelog
+* Fri Apr  1 2011 Jens Petersen <petersen@redhat.com> - 0.11.14-1
+- provides ghc-*-doc still needed for current lib templates
+
 * Mon Mar 28 2011 Jens Petersen <petersen@redhat.com> - 0.11.13-1
 - ghc-deps.sh: check PKGBASEDIR exists to avoid warning for bin package
 - abort cabal_configure if ghc is not self-bootstrapped
-- make ghc_reindex_haddock a safe : no-op
+- make ghc_reindex_haddock a safe no-op
 - no longer provide ghc-*-doc
 - no longer run ghc_reindex_haddock in ghc-*-devel scripts
 
