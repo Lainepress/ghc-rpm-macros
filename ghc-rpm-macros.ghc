@@ -16,7 +16,7 @@ to prevent dependency ABI breakage with a future ghc rebuild.\
   exit 1\
 fi\
 %endif\
-%cabal configure --prefix=%{_prefix} --libdir=%{_libdir} --docdir=%{_docdir}/%{name}-%{version} --htmldir=%{ghclibdocdir}/%{pkg_name}-%{version} --libsubdir='$compiler/$pkgid' --ghc %{!?ghc_without_shared:--enable-shared} %{!?ghc_without_dynamic:--enable-executable-dynamic} %{?cabal_configure_options}
+%cabal configure --prefix=%{_prefix} --libdir=%{_libdir} --docdir=%{_docdir}/%{name}-%{version} %{?pkg_name:--htmldir=%{ghclibdocdir}/%{pkg_name}-%{version}} --libsubdir='$compiler/$pkgid' --ghc %{!?ghc_without_shared:--enable-shared} %{!?ghc_without_dynamic:--enable-executable-dynamic} %{?cabal_configure_options}
 
 # install
 %cabal_install %cabal copy --destdir=%{buildroot} -v
@@ -155,7 +155,6 @@ Group:          Development/Libraries\
 %{?1:Version:        %{pkgver}}\
 %{-l:License:        %{-l*}}\
 %{?ghc_devel_requires}\
-%{!-h:%{?ghc_pkg_deps:Requires:       %{ghc_pkg_deps}}}\
 %{-h:Requires:       %{-h*}}\
 %{!-c:%{?ghc_pkg_c_deps:Requires:       %{ghc_pkg_c_deps}}}\
 %{-c:Requires:       %{-c*}}\
@@ -191,7 +190,6 @@ Group:          Development/Libraries\
 %{?1:Version:        %{pkgver}}\
 %{-l:License:        %{-l*}}\
 %{?ghc_prof_requires}\
-%{!-h:%{?ghc_pkg_deps:Requires:       %(echo "%{ghc_pkg_deps}" | sed -e "s/\\(ghc-[^, ]*\\)-devel/\\1-prof/g")}}\
 %{-h:Requires:       %(echo "%{-h*}" | sed -e "s/\\(ghc-[^, ]*\\)-devel/\\1-prof/g")}\
 %{?ghc_pkg_obsoletes:Obsoletes:      %(echo "%{ghc_pkg_obsoletes}" | sed -e "s/\\(ghc-[^, ]*\\)-devel/\\1-prof/g")}\
 \

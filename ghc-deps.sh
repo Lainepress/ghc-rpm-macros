@@ -30,7 +30,7 @@ files=$(cat)
 
 for i in $files; do
     LIB_FILE=$(echo $i | grep /libHS | egrep -v "$PKGBASEDIR/libHS")
-    if [ -n "$LIB_FILE" ]; then
+    if [ "$LIB_FILE" ]; then
 	if [ -d "$PKGCONFDIR" ]; then
 	    META=""
 	    SELF=""
@@ -38,12 +38,12 @@ for i in $files; do
 		*.so) META=ghc ;;
 		*_p.a) META=ghc-prof SELF=ghc-devel ;;
 		*.a) META=ghc-devel
-		    if [ -n "$SHARED" ]; then
+		    if [ "$SHARED" ]; then
 			SELF=ghc
 		    fi
 		    ;;
 	    esac
-	    if [ -n "$META" ]; then
+	    if [ "$META" ]; then
 		PKGVER=$(echo $LIB_FILE | sed -e "s%$PKGBASEDIR/\([^/]\+\)/libHS.*%\1%")
 		HASHS=$(ghc-pkg -f $PKGCONFDIR field $PKGVER $FIELD | sed -e "s/^$FIELD: \+//")
 		for i in $HASHS; do
@@ -52,7 +52,7 @@ for i in $files; do
 			*) ;;
 		    esac
 		done
-		if [ "$MODE" = "--requires" -a -n "$SELF" ]; then
+		if [ "$MODE" = "--requires" -a "$SELF" ]; then
 		    HASHS=$(ghc-pkg -f $PKGCONFDIR field $PKGVER id | sed -e "s/^id: \+//")
 		    for i in $HASHS; do
 			echo $i | sed -e "s/\(.*\)-\(.*\)/$SELF(\1) = \2/"
