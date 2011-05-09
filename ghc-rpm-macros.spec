@@ -1,7 +1,7 @@
 %global debug_package %{nil}
 
 Name:		ghc-rpm-macros
-Version:	0.12.0
+Version:	0.12.1
 Release:	1%{?dist}
 Summary:	Macros for building packages for GHC
 
@@ -58,6 +58,9 @@ EOF
 
 
 %changelog
+* Mon May  9 2011 Jens Petersen <petersen@redhat.com> - 0.12.1-1
+- include ghc_pkg_c_deps even when -c option used
+
 * Sat May  7 2011 Jens Petersen <petersen@redhat.com> - 0.12.0-1
 - drop ghc_pkg_deps from ghc_package_devel and ghc_package_prof since
   ghc-deps.sh generates better inter-package dependencies already

@@ -156,7 +156,7 @@ Group:          Development/Libraries\
 %{-l:License:        %{-l*}}\
 %{?ghc_devel_requires}\
 %{-h:Requires:       %{-h*}}\
-%{!-c:%{?ghc_pkg_c_deps:Requires:       %{ghc_pkg_c_deps}}}\
+%{?ghc_pkg_c_deps:Requires:       %{ghc_pkg_c_deps}}\
 %{-c:Requires:       %{-c*}}\
 %{?ghc_pkg_obsoletes:Obsoletes:      %{ghc_pkg_obsoletes}}\
 %{?ghc_pkg_obsoletes:Obsoletes:      %(echo "%{ghc_pkg_obsoletes}" | sed -e "s/\\(ghc-[^, ]*\\)-devel/\\1-doc/g")}\
