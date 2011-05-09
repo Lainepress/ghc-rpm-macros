@@ -3,10 +3,10 @@
 
 # To use add the following lines to spec file:
 #   %define _use_internal_dependency_generator 0
-#   %define __find_requires /usr/lib/rpm/ghc-deps.sh --requires %{buildroot}%{ghcpkgbasedir}
-#   %define __find_provides /usr/lib/rpm/ghc-deps.sh --provides %{buildroot}%{ghcpkgbasedir}
+#   %define __find_requires /usr/lib/rpm/ghc-deps.sh --requires %{buildroot}%{ghclibdir}
+#   %define __find_provides /usr/lib/rpm/ghc-deps.sh --provides %{buildroot}%{ghclibdir}
 
-[ $# -ne 2 ] && echo "Usage: `basename $0` [--provides|--requires] %{buildroot}" && exit 1
+[ $# -ne 2 ] && echo "Usage: `basename $0` [--provides|--requires] %{buildroot}%{ghclibdir}" && exit 1
 
 MODE=$1
 PKGBASEDIR=$2
