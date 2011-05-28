@@ -51,8 +51,8 @@ EOF
 %files
 %defattr(-,root,root,-)
 %doc COPYING AUTHORS
-%config(noreplace) %{_sysconfdir}/rpm/macros.ghc
 %{_prefix}/lib/rpm/ghc-deps.sh
+%{_prefix}/lib/rpm/macros.ghc
 
 
 %changelog
