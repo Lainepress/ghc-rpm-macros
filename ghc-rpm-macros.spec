@@ -1,7 +1,7 @@
 %global debug_package %{nil}
 
 Name:		ghc-rpm-macros
-Version:	0.13
+Version:	0.13.1
 Release:	1%{?dist}
 Summary:	Macros for building packages for GHC
 
@@ -32,10 +32,8 @@ echo no build stage needed
 
 
 %install
-mkdir -p ${RPM_BUILD_ROOT}/%{_sysconfdir}/rpm
-install -p -m 0644 %{SOURCE0} ${RPM_BUILD_ROOT}/%{_sysconfdir}/rpm/macros.ghc
-
 mkdir -p ${RPM_BUILD_ROOT}/%{_prefix}/lib/rpm
+install -p -m 0644 %{SOURCE0} ${RPM_BUILD_ROOT}/%{_prefix}/lib/rpm/macros.ghc
 install -p %{SOURCE3} ${RPM_BUILD_ROOT}/%{_prefix}/lib/rpm
 
 # this is why this package is now arch-dependent:
@@ -58,6 +56,9 @@ EOF
 
 
 %changelog
+* Sat May 28 2011 Jens Petersen <petersen@redhat.com> - 0.13.1-1
+- move macros.ghc to /usr/lib/rpm to avoid conflict with redhat-rpm-config
+
 * Wed May 11 2011 Jens Petersen <petersen@redhat.com> - 0.13-1
 - merge prof subpackages into devel to simplify packaging
 
