@@ -1,7 +1,9 @@
 %global debug_package %{nil}
 
+%global macros_file %{_sysconfdir}/rpm/macros.ghc-pkg
+
 Name:		ghc-rpm-macros
-Version:	0.13.1
+Version:	0.13.2
 Release:	1%{?dist}
 Summary:	Macros for building packages for GHC
 
@@ -19,8 +21,8 @@ Source3:	ghc-deps.sh
 
 %description
 A set of macros for building GHC packages following the Haskell Guidelines
-of the Fedora Haskell SIG. This package probably shouldn't be installed on
-its own as GHC is needed in order to make use of these macros.
+of the Fedora Haskell SIG.  ghc needs to be installed in order to make use of
+these macros.
 
 %prep
 %setup -c -T
@@ -32,14 +34,16 @@ echo no build stage needed
 
 
 %install
-mkdir -p ${RPM_BUILD_ROOT}/%{_prefix}/lib/rpm
-install -p -m 0644 %{SOURCE0} ${RPM_BUILD_ROOT}/%{_prefix}/lib/rpm/macros.ghc
-install -p %{SOURCE3} ${RPM_BUILD_ROOT}/%{_prefix}/lib/rpm
+mkdir -p ${RPM_BUILD_ROOT}/%{_sysconfdir}/rpm
+install -p -m 0644 %{SOURCE0} ${RPM_BUILD_ROOT}/%{macros_file}
+
+mkdir -p %{buildroot}/%{_prefix}/lib/rpm
+install -p %{SOURCE3} %{buildroot}/%{_prefix}/lib/rpm
 
 # this is why this package is now arch-dependent:
 # turn off shared libs and dynamic linking on secondary archs
 %ifnarch %{ix86} x86_64
-cat >> ${RPM_BUILD_ROOT}/%{_sysconfdir}/rpm/macros.ghc <<EOF
+cat >> %{buildroot}/%{macros_file} <<EOF
 
 # shared libraries are only supported on primary intel archs
 %%ghc_without_dynamic 1
@@ -51,11 +55,15 @@ EOF
 %files
 %defattr(-,root,root,-)
 %doc COPYING AUTHORS
+%config(noreplace) %{macros_file}
 %{_prefix}/lib/rpm/ghc-deps.sh
-%{_prefix}/lib/rpm/macros.ghc
 
 
 %changelog
+* Sat May 28 2011 Jens Petersen <petersen@redhat.com> - 0.13.2-1
+- macros need to live in /etc/rpm
+- use macro_file for macros.ghc filepath
+
 * Sat May 28 2011 Jens Petersen <petersen@redhat.com> - 0.13.1-1
 - move macros.ghc to /usr/lib/rpm to avoid conflict with redhat-rpm-config
 
