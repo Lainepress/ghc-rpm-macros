@@ -140,7 +140,7 @@ This package provides the shared library.\
 %global __find_provides %{_rpmconfigdir}/ghc-deps.sh --provides %{buildroot}%{ghclibdir}\
 %global __find_requires %{_rpmconfigdir}/ghc-deps.sh --requires %{buildroot}%{ghclibdir}\
 %package -n %{basepkg}-devel\
-Summary:        Development files for %{?common_summary}%{!?common_summary:Haskell %{pkgname} library}\
+Summary:        %{?common_summary}%{!?common_summary:Haskell %{pkgname} library} development files\
 Group:          Development/Libraries\
 %{?1:Version:        %{pkgver}}\
 %{-l:License:        %{-l*}}\

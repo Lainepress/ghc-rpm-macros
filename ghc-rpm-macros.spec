@@ -1,9 +1,9 @@
 %global debug_package %{nil}
 
-%global macros_file %{_sysconfdir}/rpm/macros.ghc-pkg
+%global macros_file %{_sysconfdir}/rpm/macros.ghc
 
 Name:		ghc-rpm-macros
-Version:	0.13.2
+Version:	0.13.3
 Release:	1%{?dist}
 Summary:	Macros for building packages for GHC
 
@@ -60,6 +60,10 @@ EOF
 
 
 %changelog
+* Thu Jun  2 2011 Jens Petersen <petersen@redhat.com> - 0.13.3-1
+- rename macros.ghc-pkg back to macros.ghc
+- move the devel summary prefix back to a suffix
+
 * Sat May 28 2011 Jens Petersen <petersen@redhat.com> - 0.13.2-1
 - macros need to live in /etc/rpm
 - use macro_file for macros.ghc filepath
