@@ -5,17 +5,22 @@
 %cabal [ -x Setup ] || ghc --make %{!?ghc_without_shared:%{!?ghc_without_dynamic:-dynamic}} Setup\
 ./Setup
 
-# configure
-%cabal_configure\
-%if %{undefined ghc_bootstrap}\
+# check ghc version was rebuilt against self
+%ghc_check_bootstrap\
 if [ ! "$(ghc --info | grep \\"Booter\\ version\\",\\"%{ghc_version}\\")" ]; then\
-  echo "Aborting since this ghc build is not self-bootstrapped.\
+  echo "Warning: this ghc build is not self-bootstrapped.\
 The ghc package should be rebuilt against its current version first\
 to prevent dependency ABI breakage from a future ghc rebuild.\
 (This can be overridden understanding this risk, by defining ghc_bootstrap.)"\
+%if %{undefined ghc_bootstrap}\
+  echo "Aborting."\
   exit 1\
-fi\
 %endif\
+fi
+
+# configure
+%cabal_configure\
+%ghc_check_bootstrap\
 %cabal configure --prefix=%{_prefix} --libdir=%{_libdir} --docdir=%{_docdir}/%{name}-%{version} %{?pkg_name:--htmldir=%{ghclibdocdir}/%{pkg_name}-%{version}} --libsubdir='$compiler/$pkgid' --ghc %{!?ghc_without_shared:--enable-shared} %{!?ghc_without_dynamic:--enable-executable-dynamic} %{?cabal_configure_options}
 
 # install

@@ -3,7 +3,7 @@
 %global macros_file %{_sysconfdir}/rpm/macros.ghc
 
 Name:		ghc-rpm-macros
-Version:	0.13.3
+Version:	0.13.4
 Release:	1%{?dist}
 Summary:	Macros for building packages for GHC
 
@@ -34,11 +34,9 @@ echo no build stage needed
 
 
 %install
-mkdir -p ${RPM_BUILD_ROOT}/%{_sysconfdir}/rpm
-install -p -m 0644 %{SOURCE0} ${RPM_BUILD_ROOT}/%{macros_file}
+install -p -D -m 0644 %{SOURCE0} ${RPM_BUILD_ROOT}/%{macros_file}
 
-mkdir -p %{buildroot}/%{_prefix}/lib/rpm
-install -p %{SOURCE3} %{buildroot}/%{_prefix}/lib/rpm
+install -p -D -m 0755 %{SOURCE3} %{buildroot}/%{_prefix}/lib/rpm/ghc-deps.sh
 
 # this is why this package is now arch-dependent:
 # turn off shared libs and dynamic linking on secondary archs
@@ -60,6 +58,9 @@ EOF
 
 
 %changelog
+* Fri Jun 17 2011 Jens Petersen <petersen@redhat.com> - 0.13.4-1
+- add ghc_check_bootstrap
+
 * Thu Jun  2 2011 Jens Petersen <petersen@redhat.com> - 0.13.3-1
 - rename macros.ghc-pkg back to macros.ghc
 - move the devel summary prefix back to a suffix
