@@ -12,7 +12,7 @@ if [ ! "$(ghc --info | grep \\"Booter\\ version\\",\\"%{ghc_version}\\")" ]; the
 %if %{undefined ghc_bootstrapping}\
   echo "The ghc package should be rebuilt against its current version before\
 proceeding, to avoid dependency ABI breakage from a future ghc rebuild."\
-  echo "To override set ghc_bootstrapping.
+  echo "To override set ghc_bootstrapping."\
   echo "Aborting."\
   exit 1\
 %endif\
