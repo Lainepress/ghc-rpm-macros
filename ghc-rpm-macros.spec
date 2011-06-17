@@ -2,27 +2,28 @@
 
 %global macros_file %{_sysconfdir}/rpm/macros.ghc
 
-Name:		ghc-rpm-macros
-Version:	0.13.4
-Release:	1%{?dist}
-Summary:	Macros for building packages for GHC
+Name:           ghc-rpm-macros
+Version:        0.13.5
+Release:        1%{?dist}
+Summary:        Macros for building packages for GHC
 
-Group:		Development/Libraries
-License:	GPLv3
-URL:		https://fedoraproject.org/wiki/Haskell_SIG
+Group:          Development/Libraries
+License:        GPLv3
+URL:            https://fedoraproject.org/wiki/Haskell_SIG
 
 # This is a Fedora maintained package which is specific to
 # our distribution.  Thus the source is only available from
 # within this srpm.
-Source0:	ghc-rpm-macros.ghc
-Source1:	COPYING
-Source2:	AUTHORS
-Source3:	ghc-deps.sh
+Source0:        ghc-rpm-macros.ghc
+Source1:        COPYING
+Source2:        AUTHORS
+Source3:        ghc-deps.sh
 
 %description
 A set of macros for building GHC packages following the Haskell Guidelines
 of the Fedora Haskell SIG.  ghc needs to be installed in order to make use of
 these macros.
+
 
 %prep
 %setup -c -T
@@ -58,6 +59,12 @@ EOF
 
 
 %changelog
+* Fri Jun 17 2011 Jens Petersen <petersen@redhat.com> - 0.13.5-1
+- ghc_bootstrap is now a macro which sets ghc_bootstrapping,
+  ghc_without_shared, without_prof, without_haddock, without_hscolour,
+  without_manual, without_testsuite
+- tweaks to ghc_check_bootstrap
+
 * Fri Jun 17 2011 Jens Petersen <petersen@redhat.com> - 0.13.4-1
 - add ghc_check_bootstrap
 

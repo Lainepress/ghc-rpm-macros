@@ -8,11 +8,11 @@
 # check ghc version was rebuilt against self
 %ghc_check_bootstrap\
 if [ ! "$(ghc --info | grep \\"Booter\\ version\\",\\"%{ghc_version}\\")" ]; then\
-  echo "Warning: this ghc build is not self-bootstrapped.\
-The ghc package should be rebuilt against its current version first\
-to prevent dependency ABI breakage from a future ghc rebuild.\
-(This can be overridden understanding this risk, by defining ghc_bootstrap.)"\
-%if %{undefined ghc_bootstrap}\
+  echo "Warning: this ghc build is not self-bootstrapped."\
+%if %{undefined ghc_bootstrapping}\
+  echo "The ghc package should be rebuilt against its current version before\
+proceeding, to avoid dependency ABI breakage from a future ghc rebuild."\
+  echo "To override set ghc_bootstrapping.
   echo "Aborting."\
   exit 1\
 %endif\
@@ -213,3 +213,13 @@ find %{buildroot} -type f -exec sh -c "file {} | grep -q 'dynamically linked'" \
 %ghc_gen_filelists\
 %{!?1:%ghc_strip_dynlinked}\
 %{nil}
+
+# skip shared and prof libs, documentation, and testsuite
+%ghc_bootstrap\
+%global ghc_bootstrapping 1\
+%global ghc_without_shared 1\
+%global without_prof 1\
+%global without_haddock 1\
+%global without_hscolour 1\
+%global without_manual 1\
+%global without_testsuite 1
