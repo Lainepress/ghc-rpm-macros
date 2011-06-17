@@ -3,7 +3,7 @@
 %global macros_file %{_sysconfdir}/rpm/macros.ghc
 
 Name:           ghc-rpm-macros
-Version:        0.13.5
+Version:        0.13.6
 Release:        1%{?dist}
 Summary:        Macros for building packages for GHC
 
@@ -59,6 +59,10 @@ EOF
 
 
 %changelog
+* Fri Jun 17 2011 Jens Petersen <petersen@redhat.com> - 0.13.6-1
+- also set ghc_without_dynamic for ghc_bootstrap
+- drop without_hscolour from ghc_bootstrap: doesn't work for koji
+
 * Fri Jun 17 2011 Jens Petersen <petersen@redhat.com> - 0.13.5-1
 - ghc_bootstrap is now a macro which sets ghc_bootstrapping,
   ghc_without_shared, without_prof, without_haddock, without_hscolour,
