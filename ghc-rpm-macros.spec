@@ -3,7 +3,7 @@
 %global macros_file %{_sysconfdir}/rpm/macros.ghc
 
 Name:           ghc-rpm-macros
-Version:        0.13.6
+Version:        0.13.7
 Release:        1%{?dist}
 Summary:        Macros for building packages for GHC
 
@@ -18,6 +18,7 @@ Source0:        ghc-rpm-macros.ghc
 Source1:        COPYING
 Source2:        AUTHORS
 Source3:        ghc-deps.sh
+Requires:       redhat-rpm-config
 
 %description
 A set of macros for building GHC packages following the Haskell Guidelines
@@ -59,6 +60,10 @@ EOF
 
 
 %changelog
+* Mon Jun 27 2011 Jens Petersen <petersen@redhat.com> - 0.13.7-1
+- add requires for redhat-rpm-config for ghc_arches
+- drop ghc_bootstrapping from ghc_bootstrap: doesn't work for koji
+
 * Fri Jun 17 2011 Jens Petersen <petersen@redhat.com> - 0.13.6-1
 - also set ghc_without_dynamic for ghc_bootstrap
 - drop without_hscolour from ghc_bootstrap: doesn't work for koji

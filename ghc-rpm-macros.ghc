@@ -217,7 +217,6 @@ find %{buildroot} -type f -exec sh -c "file {} | grep -q 'dynamically linked'" \
 # skip shared and prof libs, documentation, and testsuite
 # - without_hscolour needs to be set locally in the spec file
 %ghc_bootstrap\
-%global ghc_bootstrapping 1\
 %global ghc_without_shared 1\
 %global ghc_without_dynamic 1\
 %global without_prof 1\
