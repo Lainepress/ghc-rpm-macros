@@ -43,13 +43,11 @@ fi
 %define docdir %{ghclibdocdir}/%{pkgnamever}\
 rm -f %{basepkg}.files %{basepkg}-devel.files\
 %if %{undefined ghc_without_shared}\
-echo "%defattr(-,root,root,-)" > %{basepkg}.files\
 if [ -d "%{buildroot}%{pkgdir}" ]; then\
 echo "%dir %{pkgdir}" >> %{basepkg}.files\
 echo "%attr(755,root,root) %{pkgdir}/libHS%{pkgnamever}-ghc%{ghc_version}.so" >> %{basepkg}.files\
 fi\
 %endif\
-echo "%defattr(-,root,root,-)" > %{basepkg}-devel.files\
 %if 0%{!?1:1}\
 if [ -d "%{buildroot}%{_docdir}/%{name}-%{version}" ]; then\
   echo "%{_docdir}/%{name}-%{version}" >> %{basepkg}%{?ghc_without_shared:-devel}.files\
@@ -101,7 +99,6 @@ Requires:       ghc-%{?pkg_name}%{!?pkg_name:%{pkgname}} = %{?pkgver}%{!?pkgver:
 %define basepkg ghc-%{pkgname}\
 %if %{undefined ghc_without_shared}\
 %files -n %{basepkg} -f %{basepkg}.files\
-%defattr(-,root,root,-)\
 %endif\
 \
 %ghc_package_devel\
@@ -141,9 +138,6 @@ This package provides the shared library.\
 %define pkgver %{?2}%{!?2:%{version}}\
 %define pkgnamever %{pkgname}-%{pkgver}\
 %define basepkg ghc-%{pkgname}\
-%global _use_internal_dependency_generator 0\
-%global __find_provides %{_rpmconfigdir}/ghc-deps.sh --provides %{buildroot}%{ghclibdir}\
-%global __find_requires %{_rpmconfigdir}/ghc-deps.sh --requires %{buildroot}%{ghclibdir}\
 %package -n %{basepkg}-devel\
 Summary:        %{?common_summary}%{!?common_summary:Haskell %{pkgname} library} development files\
 Group:          Development/Libraries\
@@ -172,7 +166,6 @@ This package contains the development files.\
 %ghc_pkg_recache\
 \
 %files -n %{basepkg}-devel -f %{basepkg}-devel.files\
-%defattr(-,root,root,-)\
 %{nil}
 
 # ghc_strip_dynlinked
@@ -206,6 +199,9 @@ find %{buildroot} -type f -exec sh -c "file {} | grep -q 'dynamically linked'" \
 
 # ghc_lib_install [name] [version]
 %ghc_lib_install()\
+%global _use_internal_dependency_generator 0\
+%global __find_provides %{_rpmconfigdir}/ghc-deps.sh --provides %{buildroot}%{ghclibdir}\
+%global __find_requires %{_rpmconfigdir}/ghc-deps.sh --requires %{buildroot}%{ghclibdir}\
 %{?1:cd %1-%2}\
 %cabal_install\
 %cabal_pkg_conf\
