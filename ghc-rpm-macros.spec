@@ -3,7 +3,7 @@
 %global macros_file %{_sysconfdir}/rpm/macros.ghc
 
 Name:           ghc-rpm-macros
-Version:        0.13.8
+Version:        0.13.9
 Release:        1%{?dist}
 Summary:        Macros for building packages for GHC
 
@@ -60,6 +60,9 @@ EOF
 
 
 %changelog
+* Wed Aug  3 2011 Jens Petersen <petersen@redhat.com> - 0.13.9-1
+- drop without_testsuite from ghc_bootstrap since it breaks koji
+
 * Fri Jul  1 2011 Jens Petersen <petersen@redhat.com> - 0.13.8-1
 - drop redundant defattr from filelists
 - move dependency generator setup from ghc_package_devel to ghc_lib_install

@@ -217,5 +217,4 @@ find %{buildroot} -type f -exec sh -c "file {} | grep -q 'dynamically linked'" \
 %global ghc_without_dynamic 1\
 %global without_prof 1\
 %global without_haddock 1\
-%global without_manual 1\
-%global without_testsuite 1
+%global without_manual 1
